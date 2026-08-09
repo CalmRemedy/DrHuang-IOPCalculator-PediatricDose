@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>眼壓角膜厚度校正計算工具</title>
+    <!-- 引入 Tailwind CSS 快速打造響應式介面 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="bg-blue-600 text-white py-4 shadow-md">
+        <div class="max-w-4xl mx-auto px-4">
+            <h1 class="text-xl font-bold">眼壓角膜厚度 (CCT) 校正工具</h1>
+            <p class="text-xs text-blue-100 mt-1">支援 Doughty、Shimmyo、Whitacre、Ehlers、Shah 等經典公式</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-6 flex-grow w-full">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- 右眼 (OD) 輸入區 -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-bold text-blue-600 mb-4 border-b pb-2">右眼 (OD) 數據輸入</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">平超氏眼壓 (GAT, mmHg)</label>
+                        <input type="number" id="od_gat" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="例如: 15">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">中央角膜厚度 (CCT, μm)</label>
+                        <input type="number" id="od_cct" step="1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="例如: 545">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">K1 (選擇性)</label>
+                            <input type="number" id="od_k1" step="0.01" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="K1">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">K2 (選擇性)</label>
+                            <input type="number" id="od_k2" step="0.01" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="K2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 左眼 (OS) 輸入區 -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-bold text-emerald-600 mb-4 border-b pb-2">左眼 (OS) 數據輸入</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">平超氏眼壓 (GAT, mmHg)</label>
+                        <input type="number" id="os_gat" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="例如: 15">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">中央角膜厚度 (CCT, μm)</label>
+                        <input type="number" id="os_cct" step="1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="例如: 545">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">K1 (選擇性)</label>
+                            <input type="number" id="os_k1" step="0.01" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="K1">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">K2 (選擇性)</label>
+                            <input type="number" id="os_k2" step="0.01" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="K2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 計算按鈕 -->
+        <div class="mt-6 text-center">
+            <button onclick="calculateIOP()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl shadow transition duration-200 w-full md:w-auto">
+                開始計算校正眼壓
+            </button>
+        </div>
+
+        <!-- 輸出結果區 -->
+        <div id="resultSection" class="mt-8 hidden space-y-6">
+            <h3 class="text-xl font-bold text-slate-800 border-b pb-2">校正結果比較</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 右眼結果 -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-blue-100">
+                    <h4 class="font-bold text-blue-600 mb-3">右眼 (OD) 預估結果</h4>
+                    <div id="od_results" class="space-y-2 text-sm"></div>
+                </div>
+                <!-- 左眼結果 -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-emerald-100">
+                    <h4 class="font-bold text-emerald-600 mb-3">左眼 (OS) 預估結果</h4>
+                    <div id="os_results" class="space-y-2 text-sm"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-12 text-center text-xs text-slate-500">
+        <p>Ophthalmology Clinical Tool &copy; 2026</p>
+    </footer>
+
+    <!-- JavaScript 邏輯 -->
+    <script>
+        function calculateSingleEye(gat, cct, k1, k2) {
+            if (isNaN(gat) || isNaN(cct)) return null;
+
+            // 1. Doughty and Zaman (2000)
+            let doughty = gat + 25 * ((545 - cct) / 545);
+
+            // 2. Shimmyo et al. (2003)
+            let shimmyo = gat + (550 - cct) / (18 * Math.exp(-0.005 * gat));
+
+            // 3. Whitacre et al. (1993)
+            let whitacre = (cct >= 520) 
+                ? gat + 12.28 - (0.02283 * cct) 
+                : gat + 22.38 - (0.04644 * cct);
+
+            // 4. Ehlers et al. (1975)
+            let ehlers = gat - ((cct - 520) / 50) * 2.5;
+
+            // 5. Shah et al. (1999)
+            let shah = gat - ((cct - 520) / 10) * 0.71;
+
+            // 6. Shimmyo with K values (Exponential X) - 選擇性
+            let shimmyoK = null;
+            if (!isNaN(k1) && !isNaN(k2) && (k1 + k2) > 0) {
+                let X = 18 * Math.exp(-0.005 * gat);
+                shimmyoK = gat + (550 - cct) / X + 0.8 * ((675 / (k1 + k2)) - 7.85);
+            }
+
+            return { doughty, shimmyo, whitacre, ehlers, shah, shimmyoK };
+        }
+
+        function renderResults(res, elementId) {
+            const container = document.getElementById(elementId);
+            if (!res) {
+                container.innerHTML = `<p class="text-slate-400">請輸入有效的眼壓與角膜厚度。</p>`;
+                return;
+            }
+
+            let html = `
+                <div class="flex justify-between py-1 border-b border-slate-100"><span>Doughty (2000):</span> <span class="font-semibold">${res.doughty.toFixed(1)} mmHg</span></div>
+                <div class="flex justify-between py-1 border-b border-slate-100"><span>Shimmyo (2003):</span> <span class="font-semibold">${res.shimmyo.toFixed(1)} mmHg</span></div>
+                <div class="flex justify-between py-1 border-b border-slate-100"><span>Whitacre (1993):</span> <span class="font-semibold">${res.whitacre.toFixed(1)} mmHg</span></div>
+                <div class="flex justify-between py-1 border-b border-slate-100"><span>Ehlers (1975):</span> <span class="font-semibold">${res.ehlers.toFixed(1)} mmHg</span></div>
+                <div class="flex justify-between py-1 border-b border-slate-100"><span>Shah (1999):</span> <span class="font-semibold">${res.shah.toFixed(1)} mmHg</span></div>
+            `;
+
+            if (res.shimmyoK !== null) {
+                html += `<div class="flex justify-between py-1 border-b border-slate-100 text-blue-600 font-medium"><span>Shimmyo (含 K 值):</span> <span>${res.shimmyoK.toFixed(1)} mmHg</span></div>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function calculateIOP() {
+            // 讀取右眼
+            let od_gat = parseFloat(document.getElementById('od_gat').value);
+            let od_cct = parseFloat(document.getElementById('od_cct').value);
+            let od_k1 = parseFloat(document.getElementById('od_k1').value);
+            let od_k2 = parseFloat(document.getElementById('od_k2').value);
+
+            // 讀取左眼
+            let os_gat = parseFloat(document.getElementById('os_gat').value);
+            let os_cct = parseFloat(document.getElementById('os_cct').value);
+            let os_k1 = parseFloat(document.getElementById('os_k1').value);
+            let os_k2 = parseFloat(document.getElementById('os_k2').value);
+
+            let od_res = calculateSingleEye(od_gat, od_cct, od_k1, od_k2);
+            let os_res = calculateSingleEye(os_gat, os_cct, os_k1, os_k2);
+
+            if (!od_res && !os_res) {
+                alert('請至少完整輸入一眼的眼壓與角膜厚度！');
+                return;
+            }
+
+            document.getElementById('resultSection').classList.remove('hidden');
+
+            renderResults(od_res, 'od_results');
+            renderResults(os_res, 'os_results');
+        }
+    </script>
+</body>
+</html>
