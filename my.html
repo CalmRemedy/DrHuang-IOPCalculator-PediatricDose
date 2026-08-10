@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Oph Calc</title>
+
+    <!-- 設定加到手機主畫面時的 App 屬性 -->
+    <meta name="apple-mobile-web-app-title" content="Oph Calc">
+    <meta name="application-name" content="Oph Calc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="logo.jpg">
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入 KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+    <style>
+        /* 隱藏預設上下箭頭 */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        /* 統一三欄式排版寬度 */
+        .sync-grid {
+            display: grid;
+            grid-template-columns: 95px 1fr 1fr;
+            gap: 6px 10px;
+            align-items: center;
+        }
+        @media (min-width: 768px) {
+            .sync-grid { grid-template-columns: 120px 1fr 1fr; }
+        }
+
+        /* 強制縮小 KaTeX 預設的上下邊距 */
+        .katex-display { margin: 0.1em 0 !important; }
+        .katex { font-size: 1.05em !important; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen pt-20 md:pt-10">
+
+    <!-- 頂部導覽列：包含三個標籤 (小兒劑量加回) -->
+    <nav class="bg-gray-200/90 p-2 mb-3 flex gap-1.5 shadow-inner max-w-3xl mx-auto mx-2">
+        <button onclick="switchTab('tab-iop')" id="btn-tab-iop" class="flex-1 py-2.5 text-base md:text-lg font-bold bg-gray-700 text-white shadow-md rounded-lg transition-all focus:outline-none">IOP Correction</button>
+        <button onclick="switchTab('tab-info')" id="btn-tab-info" class="flex-1 py-2.5 text-sm md:text-base font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none">IOP Formulas</button>
+        <button onclick="switchTab('tab-peds')" id="btn-tab-peds" class="flex-1 py-2.5 text-sm md:text-base font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none">Pediatric Dose</button>
+    </nav>
+
+    <main class="max-w-3xl mx-auto px-2 pb-6">
+        
+        <!-- 標籤 1: IOP Correction -->
+        <div id="tab-iop" class="block">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-3">
+                <div id="inputHeaderGrid" class="sync-grid pb-1">
+                    <!-- 左上角 CLEAR 按鈕 -->
+                    <div class="flex items-center justify-center">
+                        <button onclick="clearAll()" class="text-xs md:text-sm font-bold text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md px-3 py-1.5 transition-all shadow-sm">
+                            CLEAR
+                        </button>
+                    </div>
+                    <div class="bg-[#cbd5e1] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center text-2xl md:text-3xl h-[36px] md:h-[42px]">OD</div>
+                    <div class="bg-[#e2d5d6] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center text-2xl md:text-3xl h-[36px] md:h-[42px]">OS</div>
+
+                    <div class="text-right text-sm md:text-base font-bold text-gray-700">IOP (mmHg)</div>
+                    <div><input type="number" id="od_iop" tabindex="1" step="any" inputmode="decimal" oninput="toggleBg(this, 'bg-[#cbd5e1]'); autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 text-2xl md:text-3xl rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white transition-colors"></div>
+                    <div><input type="number" id="os_iop" tabindex="2" step="any" inputmode="decimal" oninput="toggleBg(this, 'bg-[#e2d5d6]'); autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 text-2xl md:text-3xl rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white transition-colors"></div>
+
+                    <div class="text-right text-sm md:text-base font-bold text-gray-700">CCT (μm)</div>
+                    <div><input type="number" id="od_cct" tabindex="3" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_cct" tabindex="4" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+
+                    <div class="flex flex-col justify-center items-end">
+                        <span class="text-sm md:text-base font-bold text-gray-700 leading-none">K1</span>
+                        <span class="text-[10px] md:text-[11px] text-gray-500 font-normal leading-none mt-[1px]">optional</span>
+                    </div>
+                    <div><input type="number" id="od_k1" tabindex="5" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_k1" tabindex="7" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+
+                    <div class="flex flex-col justify-center items-end">
+                        <span class="text-sm md:text-base font-bold text-gray-700 leading-none">K2</span>
+                        <span class="text-[10px] md:text-[11px] text-gray-500 font-normal leading-none mt-[1px]">optional</span>
+                    </div>
+                    <div><input type="number" id="od_k2" tabindex="6" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_k2" tabindex="8" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                </div>
+
+                <div id="resultSection" class="mt-4 hidden">
+                    <div class="sync-grid" id="resultRows"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 標籤 2: IOP Formulas -->
+        <div id="tab-info" class="hidden">
+            <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200 text-gray-800 leading-tight">
+                
+                <!-- Shimmyo -->
+                <div class="mb-2">
+                    <div class="bg-gray-700 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Shimmyo et al. (2003)</div>
+                    <div class="overflow-x-auto px-1">
+                        $$P = A + \frac{550 - T}{X} + 0.8 \times \left[ \frac{675}{K1 + K2} - 7.85 \right]$$
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-1 sm:gap-2 text-[11px] sm:text-xs md:text-sm mt-1">
+                        <table class="w-full border-collapse border border-gray-300 text-center">
+                            <thead>
+                                <tr><th class="border border-gray-300 p-0.5 md:p-1 bg-gray-200 text-gray-800" colspan="2">Linear</th></tr>
+                                <tr class="bg-gray-100">
+                                    <th class="border border-gray-300 p-0.5 font-normal text-gray-600">A Range (IOP)</th>
+                                    <th class="border border-gray-300 p-0.5 font-normal text-gray-600">X Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="border border-gray-300 p-0.5">$0 < A < 10$</td><td class="border border-gray-300 p-0.5">$-0.24A + 18.4$</td></tr>
+                                <tr><td class="border border-gray-300 p-0.5">$10 < A < 20$</td><td class="border border-gray-300 p-0.5">$-0.20A + 18$</td></tr>
+                                <tr><td class="border border-gray-300 p-0.5">$20 < A < 30$</td><td class="border border-gray-300 p-0.5">$-0.14A + 16.8$</td></tr>
+                                <tr><td class="border border-gray-300 p-0.5">$30 < A < 40$</td><td class="border border-gray-300 p-0.5">$-0.12A + 16.2$</td></tr>
+                                <tr><td class="border border-gray-300 p-0.5">$40 < A < 50$</td><td class="border border-gray-300 p-0.5">$-0.10A + 15.4$</td></tr>
+                                <tr><td class="border border-gray-300 p-0.5">$50 < A < 60+$</td><td class="border border-gray-300 p-0.5">$-0.08A + 14.4$</td></tr>
+                            </tbody>
+                        </table>
+
+                        <table class="w-full border-collapse border border-gray-300 text-center">
+                            <thead>
+                                <tr><th class="border border-gray-300 p-0.5 md:p-1 bg-gray-200 text-gray-800" colspan="2">Fixed value</th></tr>
+                                <tr class="bg-gray-100">
+                                    <th class="border border-gray-300 p-0.5 font-normal text-gray-600">A Range (IOP)</th>
+                                    <th class="border border-gray-300 p-0.5 font-normal text-gray-600">X Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="border border-gray-300 p-0.5">$2.5 < A < 7.5$</td><td class="border border-gray-300 p-0.5">$17$</td></tr>
+                                <tr><td class="border border-gray-300 p-0.5">$7.5 < A < 12.5$</td><td class="border border-gray-300 p-0.5">$16$</td></tr>
+                                <tr><td class="border border-gray-300 p-0.5">$12.5 < A < 17.5$</td><td class="border border-gray-300 p-0.5">$15$</td></tr>
+                                <tr><td class="border border-gray-300 p-0.5">$17.5 < A < 22.5$</td><td class="border border-gray-300 p-0.5">$14$</td></tr>
+                                <tr><td class="border border-gray-300 p-0.5">$22.5 < A < 27.5$</td><td class="border border-gray-300 p-0.5">$13.3$</td></tr>
+                                <tr><td class="border border-gray-300 p-0.5">$27.5 < A < 32.5$</td><td class="border border-gray-300 p-0.5">$12.6$</td></tr>
+                                <tr><td class="border border-gray-300 p-0.5">$32.5 < A < 37.5$</td><td class="border border-gray-300 p-0.5">$12.0$</td></tr>
+                                <tr><td class="border border-gray-300 p-0.5">$37.5 < A < 42.5$</td><td class="border border-gray-300 p-0.5">$11.4$</td></tr>
+                                <tr><td class="border border-gray-300 p-0.5">$42.5 < A < 47.5$</td><td class="border border-gray-300 p-0.5">$10.9$</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-2">
+                        <div class="font-bold text-[11px] sm:text-xs md:text-sm text-center bg-gray-200 py-0.5 md:py-1 border border-gray-300 text-gray-800">Exponential</div>
+                        <div class="text-center mt-0.5">
+                            $$X = 18e^{-0.005A}$$
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Doughty and Zaman -->
+                <div class="mb-1 pt-1">
+                    <div class="bg-gray-700 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Doughty and Zaman (2000)</div>
+                    <div class="overflow-x-auto px-1">
+                        $$IOP_{actual} = GAT + 25 \times \left(\frac{545 - CCT}{545}\right)$$
+                    </div>
+                </div>
+
+                <!-- Whitacre et al -->
+                <div class="mb-1 pt-1">
+                    <div class="bg-gray-700 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Whitacre et al. (1993)</div>
+                    <div class="overflow-x-auto px-1 mt-1">
+                        <div class="text-[13px] md:text-sm text-gray-700 mb-0.5">If $CCT \ge 520$:</div>
+                        <div>$$IOP_{actual} = GAT + 12.28 - (0.02283 \times CCT)$$</div>
+                        <div class="text-[13px] md:text-sm text-gray-700 mt-1.5 mb-0.5">If $CCT < 520$:</div>
+                        <div>$$IOP_{actual} = GAT + 22.38 - (0.04644 \times CCT)$$</div>
+                    </div>
+                </div>
+
+                <!-- Ehlers et al -->
+                <div class="mb-1 pt-1">
+                    <div class="bg-gray-700 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Ehlers et al. (1975)</div>
+                    <div class="overflow-x-auto px-1">
+                        $$IOP_{actual} = GAT - \left(\frac{CCT - 520}{50}\right) \times 2.5$$
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 標籤 3: Pediatric Dose (專屬保留) -->
+        <div id="tab-peds" class="hidden">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center text-gray-500">
+                <p class="mb-2">🚧</p>
+                <p>Pediatric Dose Module is under construction...</p>
+                <p class="text-xs mt-2">小兒劑量計算模組預留擴充區塊</p>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        /* 歸零所有輸入格 */
+        function clearAll() {
+            const inputs = ['od_iop', 'os_iop', 'od_cct', 'os_cct', 'od_k1', 'os_k1', 'od_k2', 'os_k2'];
+            inputs.forEach(id => {
+                let el = document.getElementById(id);
+                el.value = '';
+                
+                if(id === 'od_iop' || id === 'os_iop') {
+                    el.classList.remove('bg-[#cbd5e1]', 'bg-[#e2d5d6]');
+                    el.classList.add('bg-white');
+                }
+            });
+            
+            autoCalculate();
+            document.getElementById('od_iop').focus();
+        }
+
+        /* 動態切換眼壓輸入格的底色 */
+        function toggleBg(input, activeClass) {
+            if (input.value !== "") {
+                input.classList.remove('bg-white');
+                input.classList.add(activeClass);
+            } else {
+                input.classList.remove(activeClass);
+                input.classList.add('bg-white');
+            }
+        }
+
+        /* Tab 切換邏輯 (支援三個標籤) */
+        function switchTab(tabId) {
+            ['tab-iop', 'tab-info', 'tab-peds'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+                let btn = document.getElementById('btn-' + id);
+                btn.className = 'flex-1 py-2.5 text-sm md:text-base font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none';
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+            let activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.className = 'flex-1 py-2.5 text-base md:text-lg font-bold bg-gray-700 text-white shadow-md rounded-lg transition-all focus:outline-none';
+        }
+
+        const jumpSequence = ['od_iop', 'os_iop', 'od_cct', 'os_cct', 'od_k1', 'od_k2', 'os_k1', 'os_k2'];
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const activeId = document.activeElement.id;
+                const currentIndex = jumpSequence.indexOf(activeId);
+                
+                if (currentIndex !== -1 && currentIndex < jumpSequence.length - 1) {
+                    e.preventDefault(); 
+                    const nextElement = document.getElementById(jumpSequence[currentIndex + 1]);
+                    if (nextElement) {
+                        nextElement.focus();
+                        if (nextElement.select) nextElement.select();
+                    }
+                } else if (currentIndex === jumpSequence.length - 1) {
+                    e.preventDefault();
+                    document.getElementById(jumpSequence[currentIndex]).blur();
+                }
+            }
+        });
+
+        function getShimmyoX(A, type) {
+            if (type === 'exp') return 18 * Math.exp(-0.005 * A);
+            if (type === 'linear') {
+                if (A < 10) return -0.24 * A + 18.4;
+                if (A < 20) return -0.20 * A + 18;
+                if (A < 30) return -0.14 * A + 16.8;
+                if (A < 40) return -0.12 * A + 16.2;
+                if (A < 50) return -0.10 * A + 15.4;
+                return -0.08 * A + 14.4;
+            }
+            if (type === 'fixed') {
+                if (A <= 7.5) return 17;
+                if (A <= 12.5) return 16;
+                if (A <= 17.5) return 15;
+                if (A <= 22.5) return 14;
+                if (A <= 27.5) return 13.3;
+                if (A <= 32.5) return 12.6;
+                if (A <= 37.5) return 12.0;
+                if (A <= 42.5) return 11.4;
+                return 10.9;
+            }
+            return 18 * Math.exp(-0.005 * A);
+        }
+
+        function calculateSingleEye(gat, cct, k1, k2) {
+            let k_term = 0;
+            // K值設定大於20再進行計算，避免只輸入第一碼時造成視覺干擾
+            if (!isNaN(k1) && !isNaN(k2) && k1 > 20 && k2 > 20) {
+                k_term = 0.8 * ((675 / (k1 + k2)) - 7.85);
+            }
+            
+            let shimLin = gat + (550 - cct) / getShimmyoX(gat, 'linear') + k_term;
+            let shimFix = gat + (550 - cct) / getShimmyoX(gat, 'fixed') + k_term;
+            let shimExp = gat + (550 - cct) / getShimmyoX(gat, 'exp') + k_term;
+
+            let doughty = gat + 25 * ((545 - cct) / 545);
+            let whitacre = (cct >= 520) 
+                ? gat + 12.28 - (0.02283 * cct) 
+                : gat + 22.38 - (0.04644 * cct);
+            let ehlers = gat - ((cct - 520) / 50) * 2.5;
+
+            return [
+                { id: "shimLin", main: "Shimmyo (2003)", sub: "Linear", val: shimLin },
+                { id: "shimFix", main: "Shimmyo (2003)", sub: "Fixed value", val: shimFix },
+                { id: "shimExp", main: "Shimmyo (2003)", sub: "Exponential", val: shimExp },
+                { id: "doughty", main: "Doughty (2000)", sub: "", val: doughty },
+                { id: "whitacre", main: "Whitacre (1993)", sub: "", val: whitacre },
+                { id: "ehlers", main: "Ehlers (1975)", sub: "", val: ehlers }
+            ];
+        }
+
+        function renderCombinedResults(od_res, os_res) {
+            const container = document.getElementById('resultRows');
+            container.innerHTML = '';
+
+            const templates = [
+                { id: "shimLin", main: "Shimmyo (2003)", sub: "Linear" },
+                { id: "shimFix", main: "Shimmyo (2003)", sub: "Fixed value" },
+                { id: "shimExp", main: "Shimmyo (2003)", sub: "Exponential" },
+                { id: "doughty", main: "Doughty (2000)", sub: "", isShimmyo: false },
+                { id: "whitacre", main: "Whitacre (1993)", sub: "", isShimmyo: false },
+                { id: "ehlers", main: "Ehlers (1975)", sub: "", isShimmyo: false }
+            ];
+
+            templates.forEach(t => {
+                let odItem = od_res ? od_res.find(r => r.id === t.id) : null;
+                let osItem = os_res ? os_res.find(r => r.id === t.id) : null;
+
+                let odStr = odItem ? odItem.val.toFixed(1) : '';
+                let osStr = osItem ? osItem.val.toFixed(1) : '';
+
+                let labelHtml = `
+                    <div class="flex flex-col justify-center items-end leading-none h-full py-0.5">
+                        <span class="text-[11px] md:text-xs font-bold text-gray-700">${t.main}</span>
+                        ${t.sub ? `<span class="text-[10px] md:text-[11px] text-gray-500 font-normal mt-[3px]">${t.sub}</span>` : ''}
+                    </div>
+                `;
+
+                let isShimmyo = t.id.startsWith('shim');
+                let valColor = isShimmyo ? 'text-gray-800' : 'text-gray-400';
+
+                let odClass = '';
+                let osClass = '';
+
+                if (odStr !== '') {
+                    odClass = isShimmyo ? 'bg-[#cbd5e1] border-[#cbd5e1]' : 'bg-[#cbd5e1]/25 border-[#cbd5e1]';
+                } else {
+                    odClass = 'bg-transparent border-transparent';
+                }
+
+                if (osStr !== '') {
+                    osClass = isShimmyo ? 'bg-[#e2d5d6] border-[#e2d5d6]' : 'bg-[#e2d5d6]/40 border-[#e2d5d6]';
+                } else {
+                    osClass = 'bg-transparent border-transparent';
+                }
+
+                container.innerHTML += `
+                    <div class="text-right">${labelHtml}</div>
+                    <div class="${odClass} border text-center p-1.5 rounded font-bold ${valColor} min-h-[32px] flex items-center justify-center transition-colors duration-300">${odStr}</div>
+                    <div class="${osClass} border text-center p-1.5 rounded font-bold ${valColor} min-h-[32px] flex items-center justify-center transition-colors duration-300">${osStr}</div>
+                `;
+            });
+        }
+
+        /* 即時計算主邏輯 */
+        function autoCalculate() {
+            let od_gat = parseFloat(document.getElementById('od_iop').value);
+            let od_cct = parseFloat(document.getElementById('od_cct').value);
+            let od_k1 = parseFloat(document.getElementById('od_k1').value);
+            let od_k2 = parseFloat(document.getElementById('od_k2').value);
+
+            let os_gat = parseFloat(document.getElementById('os_iop').value);
+            let os_cct = parseFloat(document.getElementById('os_cct').value);
+            let os_k1 = parseFloat(document.getElementById('os_k1').value);
+            let os_k2 = parseFloat(document.getElementById('os_k2').value);
+
+            let od_valid = !isNaN(od_gat) && !isNaN(od_cct) && od_cct > 200;
+            let os_valid = !isNaN(os_gat) && !isNaN(os_cct) && os_cct > 200;
+
+            let section = document.getElementById('resultSection');
+            let headerGrid = document.getElementById('inputHeaderGrid');
+
+            if (!od_valid && !os_valid) {
+                section.classList.add('hidden');
+                headerGrid.classList.remove('border-b', 'border-gray-200', 'pb-4');
+                headerGrid.classList.add('pb-1');
+                return;
+            }
+
+            section.classList.remove('hidden');
+            headerGrid.classList.add('border-b', 'border-gray-200', 'pb-4');
+            headerGrid.classList.remove('pb-1');
+            
+            let od_res = od_valid ? calculateSingleEye(od_gat, od_cct, od_k1, od_k2) : null;
+            let os_res = os_valid ? calculateSingleEye(os_gat, os_cct, os_k1, os_k2) : null;
+
+            renderCombinedResults(od_res, os_res);
+        }
+    </script>
+</body>
+</html>
