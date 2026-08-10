@@ -49,12 +49,10 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-3">
                 <div class="sync-grid border-b border-gray-200 pb-4">
                     <div></div>
-                    <!-- 加入 h-[36px] md:h-[42px] 使其與輸入格高度一致 -->
                     <div class="bg-[#cbd5e1] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center text-2xl md:text-3xl h-[36px] md:h-[42px]">OD</div>
                     <div class="bg-[#e2d5d6] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center text-2xl md:text-3xl h-[36px] md:h-[42px]">OS</div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700">IOP (mmHg)</div>
-                    <!-- 預設 bg-white，加入 toggleBg 函式動態改變底色 -->
                     <div><input type="number" id="od_iop" tabindex="1" step="any" inputmode="decimal" oninput="toggleBg(this, 'bg-[#cbd5e1]'); autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 text-2xl md:text-3xl rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white transition-colors"></div>
                     <div><input type="number" id="os_iop" tabindex="2" step="any" inputmode="decimal" oninput="toggleBg(this, 'bg-[#e2d5d6]'); autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 text-2xl md:text-3xl rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white transition-colors"></div>
 
@@ -298,14 +296,18 @@
                     </div>
                 `;
 
+                // 判斷是否為 Shimmyo 公式，若是則深灰 (text-gray-800)，若否則淡灰 (text-gray-500)
+                let isShimmyo = t.id.startsWith('shim');
+                let valColor = isShimmyo ? 'text-gray-800' : 'text-gray-500';
+
                 // 根據是否有數值，決定是否顯示底色與邊框
                 let odClass = odStr !== '' ? 'bg-[#cbd5e1]/25 border-[#cbd5e1]' : 'bg-transparent border-transparent';
                 let osClass = osStr !== '' ? 'bg-[#e2d5d6]/40 border-[#e2d5d6]' : 'bg-transparent border-transparent';
 
                 container.innerHTML += `
                     <div class="text-right">${labelHtml}</div>
-                    <div class="${odClass} border text-center p-1.5 rounded font-bold text-gray-800 min-h-[32px] flex items-center justify-center transition-colors duration-300">${odStr}</div>
-                    <div class="${osClass} border text-center p-1.5 rounded font-bold text-gray-800 min-h-[32px] flex items-center justify-center transition-colors duration-300">${osStr}</div>
+                    <div class="${odClass} border text-center p-1.5 rounded font-bold ${valColor} min-h-[32px] flex items-center justify-center transition-colors duration-300">${odStr}</div>
+                    <div class="${osClass} border text-center p-1.5 rounded font-bold ${valColor} min-h-[32px] flex items-center justify-center transition-colors duration-300">${osStr}</div>
                 `;
             });
         }
