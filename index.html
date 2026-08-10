@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="logo.jpg">
-    <link rel="icon" type="image/png" href="logo.jpg">
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
 
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -42,13 +42,13 @@
         .katex { font-size: 1.05em !important; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans min-h-screen">
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen pt-4 md:pt-6">
 
-    <!-- 頂部懸浮膠囊風格導覽列 -->
-    <nav class="bg-gray-200/80 p-1.5 rounded-xl mb-3 flex gap-1 shadow-inner max-w-3xl mx-auto mx-2">
-        <button onclick="switchTab('tab-iop')" id="btn-tab-iop" class="flex-1 py-2 text-sm md:text-base font-bold bg-white text-gray-800 shadow-md rounded-lg transition-all focus:outline-none">IOP Correction</button>
-        <button onclick="switchTab('tab-info')" id="btn-tab-info" class="flex-1 py-2 text-sm md:text-base font-bold text-gray-600 hover:text-gray-800 transition-all focus:outline-none">IOP Formulas</button>
-        <button onclick="switchTab('tab-peds')" id="btn-tab-peds" class="flex-1 py-2 text-sm md:text-base font-bold text-gray-600 hover:text-gray-800 transition-all focus:outline-none">Pediatric Dose</button>
+    <!-- 頂部導覽列：淺灰底橫幅無圓角，懸浮按鈕改為深灰底白字、字體加大 -->
+    <nav class="bg-gray-200/90 p-2 mb-3 flex gap-1.5 shadow-inner max-w-3xl mx-auto mx-2">
+        <button onclick="switchTab('tab-iop')" id="btn-tab-iop" class="flex-1 py-2.5 text-base md:text-lg font-bold bg-gray-700 text-white shadow-md rounded-lg transition-all focus:outline-none">IOP Correction</button>
+        <button onclick="switchTab('tab-info')" id="btn-tab-info" class="flex-1 py-2.5 text-base md:text-lg font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none">IOP Formulas</button>
+        <button onclick="switchTab('tab-peds')" id="btn-tab-peds" class="flex-1 py-2.5 text-base md:text-lg font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none">Pediatric Dose</button>
     </nav>
 
     <main class="max-w-3xl mx-auto px-2 pb-6">
@@ -56,8 +56,9 @@
         <!-- 標籤 1: IOP Correction -->
         <div id="tab-iop" class="block">
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-3">
-                <div class="sync-grid border-b border-gray-200 pb-4">
-                    <!-- 左上角 CLEAR 按鈕（放大版） -->
+                <!-- 未計算前不顯示底部的分隔線，由 JS 動態控制 -->
+                <div id="inputHeaderGrid" class="sync-grid pb-1">
+                    <!-- 左上角 CLEAR 按鈕 -->
                     <div class="flex items-center justify-center">
                         <button onclick="clearAll()" class="text-xs md:text-sm font-bold text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md px-3 py-1.5 transition-all shadow-sm">
                             CLEAR
@@ -198,6 +199,7 @@
                 let el = document.getElementById(id);
                 el.value = '';
                 
+                // 針對 IOP 欄位移除背景色，恢復預設的 bg-white
                 if(id === 'od_iop' || id === 'os_iop') {
                     el.classList.remove('bg-[#cbd5e1]', 'bg-[#e2d5d6]');
                     el.classList.add('bg-white');
@@ -219,18 +221,16 @@
             }
         }
 
-        /* 更新為懸浮膠囊風格的 Tab 切換邏輯 */
+        /* 更新為無圓角的懸浮膠囊風格 Tab 切換邏輯 */
         function switchTab(tabId) {
             ['tab-iop', 'tab-info', 'tab-peds'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
                 let btn = document.getElementById('btn-' + id);
-                // 未選中狀態：取消陰影、透明背景、灰色字體
-                btn.className = 'flex-1 py-2 text-sm md:text-base font-bold text-gray-600 hover:text-gray-800 transition-all focus:outline-none';
+                btn.className = 'flex-1 py-2.5 text-base md:text-lg font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none';
             });
             document.getElementById(tabId).classList.remove('hidden');
             let activeBtn = document.getElementById('btn-' + tabId);
-            // 選中狀態：加上白色背景、陰影 (shadow-md)、圓角與較深字體，呈現懸浮膠囊感
-            activeBtn.className = 'flex-1 py-2 text-sm md:text-base font-bold bg-white text-gray-800 shadow-md rounded-lg transition-all focus:outline-none';
+            activeBtn.className = 'flex-1 py-2.5 text-base md:text-lg font-bold bg-gray-700 text-white shadow-md rounded-lg transition-all focus:outline-none';
         }
 
         const jumpSequence = ['od_iop', 'os_iop', 'od_cct', 'os_cct', 'od_k1', 'od_k2', 'os_k1', 'os_k2'];
@@ -311,9 +311,9 @@
                 { id: "shimLin", main: "Shimmyo (2003)", sub: "Linear" },
                 { id: "shimFix", main: "Shimmyo (2003)", sub: "Fixed value" },
                 { id: "shimExp", main: "Shimmyo (2003)", sub: "Exponential" },
-                { id: "doughty", main: "Doughty (2000)", sub: "" },
-                { id: "whitacre", main: "Whitacre (1993)", sub: "" },
-                { id: "ehlers", main: "Ehlers (1975)", sub: "" }
+                { id: "doughty", main: "Doughty (2000)", sub: "", isShimmyo: false },
+                { id: "whitacre", main: "Whitacre (1993)", sub: "", isShimmyo: false },
+                { id: "ehlers", main: "Ehlers (1975)", sub: "", isShimmyo: false }
             ];
 
             templates.forEach(t => {
@@ -333,8 +333,21 @@
                 let isShimmyo = t.id.startsWith('shim');
                 let valColor = isShimmyo ? 'text-gray-800' : 'text-gray-400';
 
-                let odClass = odStr !== '' ? 'bg-[#cbd5e1]/25 border-[#cbd5e1]' : 'bg-transparent border-transparent';
-                let osClass = osStr !== '' ? 'bg-[#e2d5d6]/40 border-[#e2d5d6]' : 'bg-transparent border-transparent';
+                // Shimmyo 三列數值改為和 OD/OS 一樣的底色 (OD: #cbd5e1/35, OS: #e2d5d6/50)
+                let odClass = '';
+                let osClass = '';
+
+                if (odStr !== '') {
+                    odClass = isShimmyo ? 'bg-[#cbd5e1] border-[#cbd5e1]' : 'bg-[#cbd5e1]/25 border-[#cbd5e1]';
+                } else {
+                    odClass = 'bg-transparent border-transparent';
+                }
+
+                if (osStr !== '') {
+                    osClass = isShimmyo ? 'bg-[#e2d5d6] border-[#e2d5d6]' : 'bg-[#e2d5d6]/40 border-[#e2d5d6]';
+                } else {
+                    osClass = 'bg-transparent border-transparent';
+                }
 
                 container.innerHTML += `
                     <div class="text-right">${labelHtml}</div>
@@ -360,13 +373,20 @@
             let os_valid = !isNaN(os_gat) && !isNaN(os_cct) && os_cct > 200;
 
             let section = document.getElementById('resultSection');
+            let headerGrid = document.getElementById('inputHeaderGrid');
 
             if (!od_valid && !os_valid) {
                 section.classList.add('hidden');
+                // 未計算前，輸入區與結果區之間的橫線不要出現
+                headerGrid.classList.remove('border-b', 'border-gray-200', 'pb-4');
+                headerGrid.classList.add('pb-1');
                 return;
             }
 
             section.classList.remove('hidden');
+            // 計算結果出現時，加上底線分隔
+            headerGrid.classList.add('border-b', 'border-gray-200', 'pb-4');
+            headerGrid.classList.remove('pb-1');
             
             let od_res = od_valid ? calculateSingleEye(od_gat, od_cct, od_k1, od_k2) : null;
             let os_res = os_valid ? calculateSingleEye(os_gat, os_cct, os_k1, os_k2) : null;
