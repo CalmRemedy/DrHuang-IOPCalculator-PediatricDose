@@ -49,13 +49,14 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-3">
                 <div class="sync-grid border-b border-gray-200 pb-4">
                     <div></div>
-                    <div class="bg-[#cbd5e1] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center">OD</div>
-                    <div class="bg-[#e2d5d6] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center">OS</div>
+                    <!-- 標題文字放大為 text-2xl md:text-3xl -->
+                    <div class="bg-[#cbd5e1] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center text-2xl md:text-3xl">OD</div>
+                    <div class="bg-[#e2d5d6] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center text-2xl md:text-3xl">OS</div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700">IOP (mmHg)</div>
-                    <!-- 加入 oninput="autoCalculate()" 達到即時計算效果 -->
-                    <div><input type="number" id="od_iop" tabindex="1" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 text-2xl md:text-3xl rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
-                    <div><input type="number" id="os_iop" tabindex="2" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 text-2xl md:text-3xl rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <!-- 眼壓輸入格套用與標題相同的背景色 bg-[#cbd5e1] / bg-[#e2d5d6] -->
+                    <div><input type="number" id="od_iop" tabindex="1" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 text-2xl md:text-3xl rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-[#cbd5e1]"></div>
+                    <div><input type="number" id="os_iop" tabindex="2" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 text-2xl md:text-3xl rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-[#e2d5d6]"></div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700">CCT (μm)</div>
                     <div><input type="number" id="od_cct" tabindex="3" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
@@ -144,14 +145,6 @@
                     </div>
                 </div>
 
-                <!-- Shah et al -->
-                <div class="mb-1 pt-1">
-                    <div class="bg-gray-700 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Shah et al. (1999)</div>
-                    <div class="overflow-x-auto px-1">
-                        $$IOP_{actual} = GAT - \left(\frac{CCT - 520}{10}\right) \times 0.71$$
-                    </div>
-                </div>
-
                 <!-- Whitacre et al -->
                 <div class="mb-1 pt-1">
                     <div class="bg-gray-700 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Whitacre et al. (1993)</div>
@@ -197,7 +190,6 @@
             activeBtn.className = 'flex-1 py-3 text-base md:text-lg font-bold bg-gray-700 text-white transition-colors focus:outline-none';
         }
 
-        // 修改 JS 中的跳轉順序，與 Tabindex 完全一致 (已移除 btn_calc)
         const jumpSequence = ['od_iop', 'os_iop', 'od_cct', 'os_cct', 'od_k1', 'od_k2', 'os_k1', 'os_k2'];
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
@@ -212,7 +204,6 @@
                         if (nextElement.select) nextElement.select();
                     }
                 } else if (currentIndex === jumpSequence.length - 1) {
-                    // 如果在最後一格 (os_k2) 按下 Enter，則讓游標失去焦點 (收起鍵盤)
                     e.preventDefault();
                     document.getElementById(jumpSequence[currentIndex]).blur();
                 }
@@ -254,18 +245,17 @@
             let shimExp = gat + (550 - cct) / getShimmyoX(gat, 'exp') + k_term;
 
             let doughty = gat + 25 * ((545 - cct) / 545);
-            let shah = gat - ((cct - 520) / 10) * 0.71;
             let whitacre = (cct >= 520) 
                 ? gat + 12.28 - (0.02283 * cct) 
                 : gat + 22.38 - (0.04644 * cct);
             let ehlers = gat - ((cct - 520) / 50) * 2.5;
 
+            // Shah 已移除
             return [
                 { id: "shimLin", main: "Shimmyo (2003)", sub: "Linear", val: shimLin },
                 { id: "shimFix", main: "Shimmyo (2003)", sub: "Fixed value", val: shimFix },
                 { id: "shimExp", main: "Shimmyo (2003)", sub: "Exponential", val: shimExp },
                 { id: "doughty", main: "Doughty (2000)", sub: "", val: doughty },
-                { id: "shah", main: "Shah (1999)", sub: "", val: shah },
                 { id: "whitacre", main: "Whitacre (1993)", sub: "", val: whitacre },
                 { id: "ehlers", main: "Ehlers (1975)", sub: "", val: ehlers }
             ];
@@ -280,7 +270,6 @@
                 { id: "shimFix", main: "Shimmyo (2003)", sub: "Fixed value" },
                 { id: "shimExp", main: "Shimmyo (2003)", sub: "Exponential" },
                 { id: "doughty", main: "Doughty (2000)", sub: "" },
-                { id: "shah", main: "Shah (1999)", sub: "" },
                 { id: "whitacre", main: "Whitacre (1993)", sub: "" },
                 { id: "ehlers", main: "Ehlers (1975)", sub: "" }
             ];
@@ -299,10 +288,11 @@
                     </div>
                 `;
 
+                // 結果欄位套用專屬淡灰藍 (bg-[#cbd5e1]/40) 與淡灰粉紅 (bg-[#e2d5d6]/50) 底色
                 container.innerHTML += `
                     <div class="text-right">${labelHtml}</div>
-                    <div class="bg-gray-100 border border-gray-200 text-center p-1.5 rounded font-bold text-gray-800 min-h-[32px] flex items-center justify-center">${odStr}</div>
-                    <div class="bg-gray-100 border border-gray-200 text-center p-1.5 rounded font-bold text-gray-800 min-h-[32px] flex items-center justify-center">${osStr}</div>
+                    <div class="bg-[#cbd5e1]/40 border border-[#cbd5e1] text-center p-1.5 rounded font-bold text-gray-800 min-h-[32px] flex items-center justify-center">${odStr}</div>
+                    <div class="bg-[#e2d5d6]/50 border border-[#e2d5d6] text-center p-1.5 rounded font-bold text-gray-800 min-h-[32px] flex items-center justify-center">${osStr}</div>
                 `;
             });
         }
@@ -319,13 +309,13 @@
             let os_k1 = parseFloat(document.getElementById('os_k1').value);
             let os_k2 = parseFloat(document.getElementById('os_k2').value);
 
-            // 判斷該眼是否具備計算的最小條件 (IOP 與 CCT 都有值)
-            let od_valid = !isNaN(od_gat) && !isNaN(od_cct);
-            let os_valid = !isNaN(os_gat) && !isNaN(os_cct);
+            // 只有當 IOP 為有效數字，且 CCT 大於 200 時，才顯示計算結果，避免只輸入 1、2 位數時閃爍
+            let od_valid = !isNaN(od_gat) && !isNaN(od_cct) && od_cct > 200;
+            let os_valid = !isNaN(os_gat) && !isNaN(os_cct) && os_cct > 200;
 
             let section = document.getElementById('resultSection');
 
-            // 如果兩眼都沒資料，隱藏結果區
+            // 如果兩眼都沒符合條件，隱藏結果區
             if (!od_valid && !os_valid) {
                 section.classList.add('hidden');
                 return;
