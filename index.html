@@ -296,9 +296,9 @@
                     </div>
                 `;
 
-                // 判斷是否為 Shimmyo 公式，若是則深灰 (text-gray-800)，若否則淡灰 (text-gray-500)
+                // 判斷是否為 Shimmyo 公式，若是則深灰 (text-gray-800)，若否則改為更淡的淺灰 (text-gray-400)
                 let isShimmyo = t.id.startsWith('shim');
-                let valColor = isShimmyo ? 'text-gray-800' : 'text-gray-500';
+                let valColor = isShimmyo ? 'text-gray-800' : 'text-gray-400';
 
                 // 根據是否有數值，決定是否顯示底色與邊框
                 let odClass = odStr !== '' ? 'bg-[#cbd5e1]/25 border-[#cbd5e1]' : 'bg-transparent border-transparent';
