@@ -2,171 +2,296 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>眼壓角膜厚度校正計算工具</title>
-    <!-- 引入 Tailwind CSS 快速打造響應式介面 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ophthalmology Tools</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 自訂顏色以符合淡藍灰與淡粉灰需求 */
+        .bg-od { background-color: #e2e8f0; } /* 淡藍灰 Tailwind slate-200 */
+        .bg-os { background-color: #f5e6e8; } /* 淡粉灰 */
+        /* 隱藏 Chrome/Safari 數字輸入框預設的上下箭頭 */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+<body class="bg-gray-50 text-slate-800 font-sans min-h-screen">
 
-    <!-- Header -->
-    <header class="bg-blue-600 text-white py-4 shadow-md">
-        <div class="max-w-4xl mx-auto px-4">
-            <h1 class="text-xl font-bold">眼壓角膜厚度 (CCT) 校正工具</h1>
-            <p class="text-xs text-blue-100 mt-1">支援 Doughty、Shimmyo、Whitacre、Ehlers、Shah 等經典公式</p>
+    <!-- 頂部標籤導覽列 (Tabs) -->
+    <nav class="bg-white shadow-sm mb-6">
+        <div class="max-w-3xl mx-auto flex">
+            <button onclick="switchTab('tab-iop')" id="btn-tab-iop" class="flex-1 py-3 text-sm font-bold text-blue-600 border-b-2 border-blue-600 focus:outline-none">IOP calculate</button>
+            <button onclick="switchTab('tab-info')" id="btn-tab-info" class="flex-1 py-3 text-sm font-bold text-gray-500 border-b-2 border-transparent hover:text-blue-600 focus:outline-none">i (Formula)</button>
+            <button onclick="switchTab('tab-peds')" id="btn-tab-peds" class="flex-1 py-3 text-sm font-bold text-gray-500 border-b-2 border-transparent hover:text-blue-600 focus:outline-none">Pediatric Dose</button>
         </div>
-    </header>
+    </nav>
 
-    <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4 py-6 flex-grow w-full">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <main class="max-w-3xl mx-auto px-4 pb-12">
+        
+        <!-- 標籤 1: IOP Calculate -->
+        <div id="tab-iop" class="block">
+            <!-- 三欄式輸入區 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <!-- 標題列 -->
+                <div class="grid grid-cols-[80px_1fr_1fr] md:grid-cols-[120px_1fr_1fr] border-b border-gray-200">
+                    <div class="p-3"></div>
+                    <div class="p-3 text-center font-bold text-slate-700 bg-od">OD</div>
+                    <div class="p-3 text-center font-bold text-slate-700 bg-os">OS</div>
+                </div>
+
+                <!-- 輸入列：IOP -->
+                <div class="grid grid-cols-[80px_1fr_1fr] md:grid-cols-[120px_1fr_1fr] border-b border-gray-100 items-center">
+                    <div class="p-2 md:p-3 text-xs md:text-sm font-medium text-gray-600 text-right">IOP (mmHg)</div>
+                    <div class="p-2 bg-od/50"><input type="number" id="od_iop" step="any" inputmode="decimal" class="w-full text-center p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none"></div>
+                    <div class="p-2 bg-os/50"><input type="number" id="os_iop" step="any" inputmode="decimal" class="w-full text-center p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none"></div>
+                </div>
+
+                <!-- 輸入列：CCT -->
+                <div class="grid grid-cols-[80px_1fr_1fr] md:grid-cols-[120px_1fr_1fr] border-b border-gray-100 items-center">
+                    <div class="p-2 md:p-3 text-xs md:text-sm font-medium text-gray-600 text-right">CCT (um)</div>
+                    <div class="p-2 bg-od/50"><input type="number" id="od_cct" step="any" inputmode="decimal" class="w-full text-center p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none"></div>
+                    <div class="p-2 bg-os/50"><input type="number" id="os_cct" step="any" inputmode="decimal" class="w-full text-center p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none"></div>
+                </div>
+
+                <!-- 輸入列：K1 -->
+                <div class="grid grid-cols-[80px_1fr_1fr] md:grid-cols-[120px_1fr_1fr] border-b border-gray-100 items-center">
+                    <div class="p-2 md:p-3 text-xs md:text-sm font-medium text-gray-600 text-right">K1<br><span class="text-[10px] text-gray-400 font-normal">(optional)</span></div>
+                    <div class="p-2 bg-od/50"><input type="number" id="od_k1" step="any" inputmode="decimal" class="w-full text-center p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none"></div>
+                    <div class="p-2 bg-os/50"><input type="number" id="os_k1" step="any" inputmode="decimal" class="w-full text-center p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none"></div>
+                </div>
+
+                <!-- 輸入列：K2 -->
+                <div class="grid grid-cols-[80px_1fr_1fr] md:grid-cols-[120px_1fr_1fr] items-center">
+                    <div class="p-2 md:p-3 text-xs md:text-sm font-medium text-gray-600 text-right">K2<br><span class="text-[10px] text-gray-400 font-normal">(optional)</span></div>
+                    <div class="p-2 bg-od/50"><input type="number" id="od_k2" step="any" inputmode="decimal" class="w-full text-center p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none"></div>
+                    <div class="p-2 bg-os/50"><input type="number" id="os_k2" step="any" inputmode="decimal" class="w-full text-center p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none"></div>
+                </div>
+            </div>
+
+            <!-- 計算按鈕 -->
+            <div class="mt-6">
+                <button id="btn_calc" onclick="calculateIOP()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow transition">
+                    Calculate
+                </button>
+            </div>
+
+            <!-- 輸出結果區 (無標題，直接分左右兩欄) -->
+            <div id="resultSection" class="mt-6 hidden grid grid-cols-2 gap-4">
+                <div class="bg-od/20 border border-slate-300 p-4 rounded-lg">
+                    <div class="font-bold text-slate-700 text-center mb-3 pb-2 border-b border-slate-300">OD</div>
+                    <div id="od_results" class="space-y-2 text-sm text-slate-800"></div>
+                </div>
+                <div class="bg-os/30 border border-rose-200 p-4 rounded-lg">
+                    <div class="font-bold text-slate-700 text-center mb-3 pb-2 border-b border-rose-200">OS</div>
+                    <div id="os_results" class="space-y-2 text-sm text-slate-800"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 標籤 2: Info (公式說明) -->
+        <div id="tab-info" class="hidden space-y-6">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                <h3 class="font-bold text-lg mb-4 text-blue-600 border-b pb-2">Shimmyo Formula (2003)</h3>
+                <p class="text-sm mb-4">P = A + (550 - T) / X + 0.8 * [675 / (K1 + K2) - 7.85]</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+                    <!-- Linear Table -->
+                    <table class="w-full border-collapse border border-gray-300 text-center">
+                        <thead>
+                            <tr class="bg-gray-100"><th class="border border-gray-300 p-2" colspan="2">Linear</th></tr>
+                            <tr class="bg-gray-50">
+                                <th class="border border-gray-300 p-2">A Range (IOP)</th>
+                                <th class="border border-gray-300 p-2">X Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="border border-gray-300 p-1">0 < A < 10</td><td class="border border-gray-300 p-1">X = -0.24A + 18.4</td></tr>
+                            <tr><td class="border border-gray-300 p-1">10 < A < 20</td><td class="border border-gray-300 p-1">X = -0.20A + 18</td></tr>
+                            <tr><td class="border border-gray-300 p-1">20 < A < 30</td><td class="border border-gray-300 p-1">X = -0.14A + 16.8</td></tr>
+                            <tr><td class="border border-gray-300 p-1">30 < A < 40</td><td class="border border-gray-300 p-1">X = -0.12A + 16.2</td></tr>
+                            <tr><td class="border border-gray-300 p-1">40 < A < 50</td><td class="border border-gray-300 p-1">X = -0.10A + 15.4</td></tr>
+                            <tr><td class="border border-gray-300 p-1">50 < A < 60+</td><td class="border border-gray-300 p-1">X = -0.08A + 14.4</td></tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Fixed Value Table -->
+                    <table class="w-full border-collapse border border-gray-300 text-center">
+                        <thead>
+                            <tr class="bg-gray-100"><th class="border border-gray-300 p-2" colspan="2">Fixed value</th></tr>
+                            <tr class="bg-gray-50">
+                                <th class="border border-gray-300 p-2">A Range (IOP)</th>
+                                <th class="border border-gray-300 p-2">X Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="border border-gray-300 p-1">2.5 < A < 7.5</td><td class="border border-gray-300 p-1">X = 17</td></tr>
+                            <tr><td class="border border-gray-300 p-1">7.5 < A < 12.5</td><td class="border border-gray-300 p-1">X = 16</td></tr>
+                            <tr><td class="border border-gray-300 p-1">12.5 < A < 17.5</td><td class="border border-gray-300 p-1">X = 15</td></tr>
+                            <tr><td class="border border-gray-300 p-1">17.5 < A < 22.5</td><td class="border border-gray-300 p-1">X = 14</td></tr>
+                            <tr><td class="border border-gray-300 p-1">22.5 < A < 27.5</td><td class="border border-gray-300 p-1">X = 13.3</td></tr>
+                            <tr><td class="border border-gray-300 p-1">27.5 < A < 32.5</td><td class="border border-gray-300 p-1">X = 12.6</td></tr>
+                            <tr><td class="border border-gray-300 p-1">32.5 < A < 37.5</td><td class="border border-gray-300 p-1">X = 12.0</td></tr>
+                            <tr><td class="border border-gray-300 p-1">37.5 < A < 42.5</td><td class="border border-gray-300 p-1">X = 11.4</td></tr>
+                            <tr><td class="border border-gray-300 p-1">42.5 < A < 47.5</td><td class="border border-gray-300 p-1">X = 10.9</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             
-            <!-- 右眼 (OD) 輸入區 -->
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-                <h2 class="text-lg font-bold text-blue-600 mb-4 border-b pb-2">右眼 (OD) 數據輸入</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">平超氏眼壓 (GAT, mmHg)</label>
-                        <input type="number" id="od_gat" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="例如: 15">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">中央角膜厚度 (CCT, μm)</label>
-                        <input type="number" id="od_cct" step="1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="例如: 545">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">K1 (選擇性)</label>
-                            <input type="number" id="od_k1" step="0.01" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="K1">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">K2 (選擇性)</label>
-                            <input type="number" id="od_k2" step="0.01" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="K2">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 左眼 (OS) 輸入區 -->
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-                <h2 class="text-lg font-bold text-emerald-600 mb-4 border-b pb-2">左眼 (OS) 數據輸入</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">平超氏眼壓 (GAT, mmHg)</label>
-                        <input type="number" id="os_gat" step="0.1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="例如: 15">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">中央角膜厚度 (CCT, μm)</label>
-                        <input type="number" id="os_cct" step="1" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="例如: 545">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">K1 (選擇性)</label>
-                            <input type="number" id="os_k1" step="0.01" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="K1">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">K2 (選擇性)</label>
-                            <input type="number" id="os_k2" step="0.01" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="K2">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- 計算按鈕 -->
-        <div class="mt-6 text-center">
-            <button onclick="calculateIOP()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl shadow transition duration-200 w-full md:w-auto">
-                開始計算校正眼壓
-            </button>
-        </div>
-
-        <!-- 輸出結果區 -->
-        <div id="resultSection" class="mt-8 hidden space-y-6">
-            <h3 class="text-xl font-bold text-slate-800 border-b pb-2">校正結果比較</h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 右眼結果 -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-blue-100">
-                    <h4 class="font-bold text-blue-600 mb-3">右眼 (OD) 預估結果</h4>
-                    <div id="od_results" class="space-y-2 text-sm"></div>
-                </div>
-                <!-- 左眼結果 -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-emerald-100">
-                    <h4 class="font-bold text-emerald-600 mb-3">左眼 (OS) 預估結果</h4>
-                    <div id="os_results" class="space-y-2 text-sm"></div>
-                </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                <h3 class="font-bold text-lg mb-4 text-blue-600 border-b pb-2">Other Formulas</h3>
+                <ul class="space-y-3 text-sm list-disc pl-5">
+                    <li><strong>Doughty and Zaman (2000):</strong> GAT + 25 * [(545 - CCT) / 545]</li>
+                    <li><strong>Shah et al (1999):</strong> GAT - [(CCT - 520) / 10] * 0.71</li>
+                    <li><strong>Whitacre et al (1993):</strong> <br>If CCT >= 520: GAT + 12.28 - (0.02283 * CCT)<br>If CCT < 520: GAT + 22.38 - (0.04644 * CCT)</li>
+                    <li><strong>Ehlers et al (1975):</strong> GAT - [(CCT - 520) / 50] * 2.5</li>
+                </ul>
             </div>
         </div>
+
+        <!-- 標籤 3: Pediatric Dose (佔位區) -->
+        <div id="tab-peds" class="hidden">
+            <div class="bg-white p-10 rounded-xl shadow-sm border border-gray-200 text-center text-gray-500">
+                <p class="mb-2">🚧</p>
+                <p>Pediatric Dose Module is under construction...</p>
+                <p class="text-xs mt-2">小兒劑量計算模組預留擴充區塊</p>
+            </div>
+        </div>
+
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 py-4 mt-12 text-center text-xs text-slate-500">
-        <p>Ophthalmology Clinical Tool &copy; 2026</p>
-    </footer>
-
-    <!-- JavaScript 邏輯 -->
     <script>
+        /* 1. 標籤頁切換邏輯 */
+        function switchTab(tabId) {
+            ['tab-iop', 'tab-info', 'tab-peds'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+                let btn = document.getElementById('btn-' + id);
+                btn.classList.remove('text-blue-600', 'border-blue-600');
+                btn.classList.add('text-gray-500', 'border-transparent');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+            let activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('text-gray-500', 'border-transparent');
+            activeBtn.classList.add('text-blue-600', 'border-blue-600');
+        }
+
+        /* 2. Enter 鍵特定跳轉順序邏輯 (OD IOP -> OD CCT -> OS IOP -> OS CCT -> Calculate) */
+        const jumpSequence = ['od_iop', 'od_cct', 'os_iop', 'os_cct', 'btn_calc'];
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const activeId = document.activeElement.id;
+                const currentIndex = jumpSequence.indexOf(activeId);
+                
+                if (currentIndex !== -1 && currentIndex < jumpSequence.length - 1) {
+                    e.preventDefault(); // 阻止原本 Enter 送出的行為
+                    const nextElement = document.getElementById(jumpSequence[currentIndex + 1]);
+                    if (nextElement) {
+                        nextElement.focus();
+                        if (nextElement.select) nextElement.select();
+                    }
+                } else if (currentIndex === jumpSequence.length - 1) {
+                    // 如果在 btn_calc 上按 Enter，執行計算
+                    e.preventDefault();
+                    calculateIOP();
+                }
+            }
+        });
+
+        /* 3. Shimmyo 公式中的 X 參數取得函數 */
+        function getShimmyoX(A, type) {
+            if (type === 'exp') return 18 * Math.exp(-0.005 * A);
+            if (type === 'linear') {
+                if (A < 10) return -0.24 * A + 18.4;
+                if (A < 20) return -0.20 * A + 18;
+                if (A < 30) return -0.14 * A + 16.8;
+                if (A < 40) return -0.12 * A + 16.2;
+                if (A < 50) return -0.10 * A + 15.4;
+                return -0.08 * A + 14.4;
+            }
+            if (type === 'fixed') {
+                if (A <= 7.5) return 17;
+                if (A <= 12.5) return 16;
+                if (A <= 17.5) return 15;
+                if (A <= 22.5) return 14;
+                if (A <= 27.5) return 13.3;
+                if (A <= 32.5) return 12.6;
+                if (A <= 37.5) return 12.0;
+                if (A <= 42.5) return 11.4;
+                return 10.9;
+            }
+            return 18 * Math.exp(-0.005 * A);
+        }
+
+        /* 4. 單眼運算邏輯 */
         function calculateSingleEye(gat, cct, k1, k2) {
-            if (isNaN(gat) || isNaN(cct)) return null;
+            if (isNaN(gat) || isNaN(cct) || gat === "" || cct === "") return null;
 
-            // 1. Doughty and Zaman (2000)
+            // K 值修正項 (若沒輸入 K 值，則該項為 0)
+            let k_term = 0;
+            if (!isNaN(k1) && !isNaN(k2) && k1 > 0 && k2 > 0) {
+                k_term = 0.8 * ((675 / (k1 + k2)) - 7.85);
+            }
+
+            // --- 排序 (由新到舊) ---
+            
+            // 1~3. Shimmyo (2003) - Exp, Linear, Fixed
+            let shimExp = gat + (550 - cct) / getShimmyoX(gat, 'exp') + k_term;
+            let shimLin = gat + (550 - cct) / getShimmyoX(gat, 'linear') + k_term;
+            let shimFix = gat + (550 - cct) / getShimmyoX(gat, 'fixed') + k_term;
+
+            // 4. Doughty and Zaman (2000)
             let doughty = gat + 25 * ((545 - cct) / 545);
-
-            // 2. Shimmyo et al. (2003)
-            let shimmyo = gat + (550 - cct) / (18 * Math.exp(-0.005 * gat));
-
-            // 3. Whitacre et al. (1993)
-            let whitacre = (cct >= 520) 
-                ? gat + 12.28 - (0.02283 * cct) 
-                : gat + 22.38 - (0.04644 * cct);
-
-            // 4. Ehlers et al. (1975)
-            let ehlers = gat - ((cct - 520) / 50) * 2.5;
 
             // 5. Shah et al. (1999)
             let shah = gat - ((cct - 520) / 10) * 0.71;
 
-            // 6. Shimmyo with K values (Exponential X) - 選擇性
-            let shimmyoK = null;
-            if (!isNaN(k1) && !isNaN(k2) && (k1 + k2) > 0) {
-                let X = 18 * Math.exp(-0.005 * gat);
-                shimmyoK = gat + (550 - cct) / X + 0.8 * ((675 / (k1 + k2)) - 7.85);
-            }
+            // 6. Whitacre et al. (1993)
+            let whitacre = (cct >= 520) 
+                ? gat + 12.28 - (0.02283 * cct) 
+                : gat + 22.38 - (0.04644 * cct);
 
-            return { doughty, shimmyo, whitacre, ehlers, shah, shimmyoK };
+            // 7. Ehlers et al. (1975)
+            let ehlers = gat - ((cct - 520) / 50) * 2.5;
+
+            return [
+                { name: "Shimmyo (03) Exp", val: shimExp },
+                { name: "Shimmyo (03) Lin", val: shimLin },
+                { name: "Shimmyo (03) Fix", val: shimFix },
+                { name: "Doughty (00)", val: doughty },
+                { name: "Shah (99)", val: shah },
+                { name: "Whitacre (93)", val: whitacre },
+                { name: "Ehlers (75)", val: ehlers }
+            ];
         }
 
+        /* 5. 渲染輸出結果 */
         function renderResults(res, elementId) {
             const container = document.getElementById(elementId);
             if (!res) {
-                container.innerHTML = `<p class="text-slate-400">請輸入有效的眼壓與角膜厚度。</p>`;
+                container.innerHTML = `<p class="text-gray-400 text-center py-4">N/A</p>`;
                 return;
             }
 
-            let html = `
-                <div class="flex justify-between py-1 border-b border-slate-100"><span>Doughty (2000):</span> <span class="font-semibold">${res.doughty.toFixed(1)} mmHg</span></div>
-                <div class="flex justify-between py-1 border-b border-slate-100"><span>Shimmyo (2003):</span> <span class="font-semibold">${res.shimmyo.toFixed(1)} mmHg</span></div>
-                <div class="flex justify-between py-1 border-b border-slate-100"><span>Whitacre (1993):</span> <span class="font-semibold">${res.whitacre.toFixed(1)} mmHg</span></div>
-                <div class="flex justify-between py-1 border-b border-slate-100"><span>Ehlers (1975):</span> <span class="font-semibold">${res.ehlers.toFixed(1)} mmHg</span></div>
-                <div class="flex justify-between py-1 border-b border-slate-100"><span>Shah (1999):</span> <span class="font-semibold">${res.shah.toFixed(1)} mmHg</span></div>
-            `;
-
-            if (res.shimmyoK !== null) {
-                html += `<div class="flex justify-between py-1 border-b border-slate-100 text-blue-600 font-medium"><span>Shimmyo (含 K 值):</span> <span>${res.shimmyoK.toFixed(1)} mmHg</span></div>`;
-            }
-
+            let html = '';
+            res.forEach(item => {
+                html += `
+                <div class="flex justify-between py-1.5 border-b border-gray-100/50 last:border-0">
+                    <span class="text-xs md:text-sm text-gray-600">${item.name}</span>
+                    <span class="font-bold text-sm md:text-base">${item.val.toFixed(1)}</span>
+                </div>`;
+            });
             container.innerHTML = html;
         }
 
+        /* 6. 點擊計算按鈕執行 */
         function calculateIOP() {
-            // 讀取右眼
-            let od_gat = parseFloat(document.getElementById('od_gat').value);
+            let od_gat = parseFloat(document.getElementById('od_iop').value);
             let od_cct = parseFloat(document.getElementById('od_cct').value);
             let od_k1 = parseFloat(document.getElementById('od_k1').value);
             let od_k2 = parseFloat(document.getElementById('od_k2').value);
 
-            // 讀取左眼
-            let os_gat = parseFloat(document.getElementById('os_gat').value);
+            let os_gat = parseFloat(document.getElementById('os_iop').value);
             let os_cct = parseFloat(document.getElementById('os_cct').value);
             let os_k1 = parseFloat(document.getElementById('os_k1').value);
             let os_k2 = parseFloat(document.getElementById('os_k2').value);
@@ -174,11 +299,7 @@
             let od_res = calculateSingleEye(od_gat, od_cct, od_k1, od_k2);
             let os_res = calculateSingleEye(os_gat, os_cct, os_k1, os_k2);
 
-            if (!od_res && !os_res) {
-                alert('請至少完整輸入一眼的眼壓與角膜厚度！');
-                return;
-            }
-
+            // 展開結果區塊
             document.getElementById('resultSection').classList.remove('hidden');
 
             renderResults(od_res, 'od_results');
