@@ -17,7 +17,7 @@
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* 統一三欄式排版寬度，調回適合雙行標籤的寬度 */
+        /* 統一三欄式排版寬度 */
         .sync-grid {
             display: grid;
             grid-template-columns: 95px 1fr 1fr;
@@ -53,25 +53,25 @@
                     <div class="bg-[#e2d5d6] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center">OS</div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700">IOP (mmHg)</div>
-                    <div><input type="number" id="od_iop" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white transition-colors" oninput="toggleBg(this, 'bg-[#cbd5e1]', 'bg-white')"></div>
-                    <div><input type="number" id="os_iop" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white transition-colors" oninput="toggleBg(this, 'bg-[#e2d5d6]', 'bg-white')"></div>
+                    <!-- 加入 tabindex 以控制手機鍵盤箭頭跳轉順序 -->
+                    <div><input type="number" id="od_iop" tabindex="1" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_iop" tabindex="3" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
 
-                    <!-- 將 um 改為 μm -->
                     <div class="text-right text-sm md:text-base font-bold text-gray-700">CCT (μm)</div>
-                    <div><input type="number" id="od_cct" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
-                    <div><input type="number" id="os_cct" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="od_cct" tabindex="2" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_cct" tabindex="4" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700 leading-none">K1<br><span class="text-[10px] md:text-xs text-gray-400 font-normal">optional</span></div>
-                    <div><input type="number" id="od_k1" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
-                    <div><input type="number" id="os_k1" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="od_k1" tabindex="5" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_k1" tabindex="7" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700 leading-none">K2<br><span class="text-[10px] md:text-xs text-gray-400 font-normal">optional</span></div>
-                    <div><input type="number" id="od_k2" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
-                    <div><input type="number" id="os_k2" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="od_k2" tabindex="6" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_k2" tabindex="8" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
                 </div>
 
                 <div class="mt-3 border-b border-gray-200 pb-3">
-                    <button id="btn_calc" onclick="calculateIOP()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 md:py-2.5 rounded shadow-sm transition">
+                    <button id="btn_calc" tabindex="9" onclick="calculateIOP()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 md:py-2.5 rounded shadow-sm transition">
                         Calculate
                     </button>
                 </div>
@@ -88,20 +88,20 @@
                 
                 <!-- Shimmyo -->
                 <div class="mb-2">
-                    <!-- 人名標籤改為全寬 (block w-full) -->
                     <div class="bg-gray-500 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Shimmyo et al. (2003)</div>
                     <div class="overflow-x-auto px-1">
                         $$P = A + \frac{550 - T}{X} + 0.8 \times \left[ \frac{675}{K1 + K2} - 7.85 \right]$$
                     </div>
                     
-                    <!-- 強制手機雙表並列 (grid-cols-2) 並縮小字體 (text-[9px] sm:text-[10px]) 移除 X= -->
-                    <div class="grid grid-cols-2 gap-1 sm:gap-2 text-[9px] sm:text-[10px] md:text-sm mt-1">
+                    <!-- 加大表格內字體 text-[11px] sm:text-xs -->
+                    <div class="grid grid-cols-2 gap-1 sm:gap-2 text-[11px] sm:text-xs md:text-sm mt-1">
                         <table class="w-full border-collapse border border-gray-300 text-center">
                             <thead>
-                                <tr class="bg-gray-200"><th class="border border-gray-300 p-0.5 md:p-1" colspan="2">Linear</th></tr>
+                                <!-- 表頭樣式與 Exponential 一致 -->
+                                <tr><th class="border border-gray-300 p-0.5 md:p-1 bg-gray-200 text-gray-800" colspan="2">Linear</th></tr>
                                 <tr class="bg-gray-100">
-                                    <th class="border border-gray-300 p-0.5">A Range (IOP)</th>
-                                    <th class="border border-gray-300 p-0.5">X Value</th>
+                                    <th class="border border-gray-300 p-0.5 font-normal text-gray-600">A Range (IOP)</th>
+                                    <th class="border border-gray-300 p-0.5 font-normal text-gray-600">X Value</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -116,10 +116,11 @@
 
                         <table class="w-full border-collapse border border-gray-300 text-center">
                             <thead>
-                                <tr class="bg-gray-200"><th class="border border-gray-300 p-0.5 md:p-1" colspan="2">Fixed value</th></tr>
+                                <!-- 表頭樣式與 Exponential 一致 -->
+                                <tr><th class="border border-gray-300 p-0.5 md:p-1 bg-gray-200 text-gray-800" colspan="2">Fixed value</th></tr>
                                 <tr class="bg-gray-100">
-                                    <th class="border border-gray-300 p-0.5">A Range (IOP)</th>
-                                    <th class="border border-gray-300 p-0.5">X Value</th>
+                                    <th class="border border-gray-300 p-0.5 font-normal text-gray-600">A Range (IOP)</th>
+                                    <th class="border border-gray-300 p-0.5 font-normal text-gray-600">X Value</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -137,7 +138,8 @@
                     </div>
                     
                     <div class="mt-2">
-                        <div class="font-bold text-xs md:text-sm text-center bg-gray-200 py-0.5 border border-gray-300">Exponential</div>
+                        <!-- 與上方的 Linear / Fixed value 表頭相同的樣式 -->
+                        <div class="font-bold text-[11px] sm:text-xs md:text-sm text-center bg-gray-200 py-0.5 md:py-1 border border-gray-300 text-gray-800">Exponential</div>
                         <div class="text-center mt-0.5">
                             $$X = 18e^{-0.005A}$$
                         </div>
@@ -163,10 +165,10 @@
                 <!-- Whitacre et al -->
                 <div class="mb-1 pt-1">
                     <div class="bg-gray-500 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Whitacre et al. (1993)</div>
-                    <div class="overflow-x-auto px-1 text-sm md:text-base text-gray-700 mt-1">
-                        <div>If $CCT \ge 520$:</div>
+                    <div class="overflow-x-auto px-1 mt-1">
+                        <div class="text-[13px] md:text-sm text-gray-700 mb-0.5">If $CCT \ge 520$:</div>
                         <div>$$IOP_{actual} = GAT + 12.28 - (0.02283 \times CCT)$$</div>
-                        <div class="mt-1">If $CCT < 520$:</div>
+                        <div class="text-[13px] md:text-sm text-gray-700 mt-1.5 mb-0.5">If $CCT < 520$:</div>
                         <div>$$IOP_{actual} = GAT + 22.38 - (0.04644 \times CCT)$$</div>
                     </div>
                 </div>
@@ -194,14 +196,6 @@
     </main>
 
     <script>
-        function toggleBg(inputElement, activeClass, inactiveClass) {
-            if (inputElement.value !== "") {
-                inputElement.className = inputElement.className.replace(inactiveClass, activeClass);
-            } else {
-                inputElement.className = inputElement.className.replace(activeClass, inactiveClass);
-            }
-        }
-
         function switchTab(tabId) {
             ['tab-iop', 'tab-info', 'tab-peds'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
@@ -287,6 +281,7 @@
             ];
         }
 
+        /* 渲染輸出結果 (間距緊密設定) */
         function renderCombinedResults(od_res, os_res) {
             const container = document.getElementById('resultRows');
             container.innerHTML = '';
@@ -313,14 +308,16 @@
                 let odStr = odItem ? odItem.val.toFixed(1) : '';
                 let osStr = osItem ? osItem.val.toFixed(1) : '';
 
-                // 加入 <br> 讓子標籤斷行顯示
-                let labelHtml = `<span class="text-[11px] md:text-xs font-bold text-gray-700">${t.main}</span>`;
-                if (t.sub) {
-                    labelHtml += `<br><span class="text-[10px] md:text-[11px] text-gray-500 font-normal">${t.sub}</span>`;
-                }
+                // 使用 flex-col 排列，並將下邊界 (mt) 縮到極小，達到緊密效果
+                let labelHtml = `
+                    <div class="flex flex-col justify-center items-end leading-none h-full py-0.5">
+                        <span class="text-[11px] md:text-xs font-bold text-gray-700">${t.main}</span>
+                        ${t.sub ? `<span class="text-[10px] md:text-[11px] text-gray-500 font-normal mt-[3px]">${t.sub}</span>` : ''}
+                    </div>
+                `;
 
                 container.innerHTML += `
-                    <div class="text-right leading-tight">${labelHtml}</div>
+                    <div class="text-right">${labelHtml}</div>
                     <div class="bg-gray-100 border border-gray-200 text-center p-1.5 rounded font-bold text-gray-800 min-h-[32px] flex items-center justify-center">${odStr}</div>
                     <div class="bg-gray-100 border border-gray-200 text-center p-1.5 rounded font-bold text-gray-800 min-h-[32px] flex items-center justify-center">${osStr}</div>
                 `;
