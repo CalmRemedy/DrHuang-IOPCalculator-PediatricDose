@@ -44,11 +44,11 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans min-h-screen pt-4 md:pt-6">
 
-    <!-- 頂部導覽列：淺灰底橫幅無圓角，懸浮按鈕改為深灰底白字、字體加大 -->
+    <!-- 頂部導覽列：動態調整字體大小，被選取時放大 -->
     <nav class="bg-gray-200/90 p-2 mb-3 flex gap-1.5 shadow-inner max-w-3xl mx-auto mx-2">
         <button onclick="switchTab('tab-iop')" id="btn-tab-iop" class="flex-1 py-2.5 text-base md:text-lg font-bold bg-gray-700 text-white shadow-md rounded-lg transition-all focus:outline-none">IOP Correction</button>
-        <button onclick="switchTab('tab-info')" id="btn-tab-info" class="flex-1 py-2.5 text-base md:text-lg font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none">IOP Formulas</button>
-        <button onclick="switchTab('tab-peds')" id="btn-tab-peds" class="flex-1 py-2.5 text-base md:text-lg font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none">Pediatric Dose</button>
+        <button onclick="switchTab('tab-info')" id="btn-tab-info" class="flex-1 py-2.5 text-sm md:text-base font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none">IOP Formulas</button>
+        <button onclick="switchTab('tab-peds')" id="btn-tab-peds" class="flex-1 py-2.5 text-sm md:text-base font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none">Pediatric Dose</button>
     </nav>
 
     <main class="max-w-3xl mx-auto px-2 pb-6">
@@ -56,9 +56,7 @@
         <!-- 標籤 1: IOP Correction -->
         <div id="tab-iop" class="block">
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-3">
-                <!-- 未計算前不顯示底部的分隔線，由 JS 動態控制 -->
                 <div id="inputHeaderGrid" class="sync-grid pb-1">
-                    <!-- 左上角 CLEAR 按鈕 -->
                     <div class="flex items-center justify-center">
                         <button onclick="clearAll()" class="text-xs md:text-sm font-bold text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md px-3 py-1.5 transition-all shadow-sm">
                             CLEAR
@@ -199,7 +197,6 @@
                 let el = document.getElementById(id);
                 el.value = '';
                 
-                // 針對 IOP 欄位移除背景色，恢復預設的 bg-white
                 if(id === 'od_iop' || id === 'os_iop') {
                     el.classList.remove('bg-[#cbd5e1]', 'bg-[#e2d5d6]');
                     el.classList.add('bg-white');
@@ -221,12 +218,12 @@
             }
         }
 
-        /* 更新為無圓角的懸浮膠囊風格 Tab 切換邏輯 */
+        /* 更新：未選取時為較小字體，被選取時放大 */
         function switchTab(tabId) {
             ['tab-iop', 'tab-info', 'tab-peds'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
                 let btn = document.getElementById('btn-' + id);
-                btn.className = 'flex-1 py-2.5 text-base md:text-lg font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none';
+                btn.className = 'flex-1 py-2.5 text-sm md:text-base font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none';
             });
             document.getElementById(tabId).classList.remove('hidden');
             let activeBtn = document.getElementById('btn-' + tabId);
@@ -333,7 +330,6 @@
                 let isShimmyo = t.id.startsWith('shim');
                 let valColor = isShimmyo ? 'text-gray-800' : 'text-gray-400';
 
-                // Shimmyo 三列數值改為和 OD/OS 一樣的底色 (OD: #cbd5e1/35, OS: #e2d5d6/50)
                 let odClass = '';
                 let osClass = '';
 
@@ -377,14 +373,12 @@
 
             if (!od_valid && !os_valid) {
                 section.classList.add('hidden');
-                // 未計算前，輸入區與結果區之間的橫線不要出現
                 headerGrid.classList.remove('border-b', 'border-gray-200', 'pb-4');
                 headerGrid.classList.add('pb-1');
                 return;
             }
 
             section.classList.remove('hidden');
-            // 計算結果出現時，加上底線分隔
             headerGrid.classList.add('border-b', 'border-gray-200', 'pb-4');
             headerGrid.classList.remove('pb-1');
             
