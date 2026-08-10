@@ -5,178 +5,176 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ophthalmology Tools</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入 KaTeX 以渲染漂亮的數學公式 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
     <style>
-        /* 兩眼底色微調加深，更易辨識 */
-        .bg-od { background-color: #cbd5e1; } /* 深一點的淡藍灰 (slate-300) */
-        .bg-os { background-color: #e2d5d6; } /* 深一點的淡粉灰 */
+        .bg-od { background-color: #cbd5e1; }
+        .bg-os { background-color: #e2d5d6; }
         
-        /* 隱藏 Chrome/Safari 數字輸入框預設的上下箭頭 */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* 統一三欄式排版寬度 (左側標籤、OD、OS)，保證輸入區與輸出區完全對齊 */
+        /* 縮小間距，讓排版更緊密 */
         .sync-grid {
             display: grid;
-            grid-template-columns: 90px 1fr 1fr;
-            gap: 12px 16px;
+            grid-template-columns: 110px 1fr 1fr;
+            gap: 8px 12px;
             align-items: center;
         }
         @media (min-width: 768px) {
-            .sync-grid { grid-template-columns: 120px 1fr 1fr; }
+            .sync-grid { grid-template-columns: 140px 1fr 1fr; }
         }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans min-h-screen">
 
-    <!-- 頂部標籤導覽列 (Tabs) -->
-    <nav class="bg-gray-100 mb-8 flex shadow-sm">
-        <button onclick="switchTab('tab-iop')" id="btn-tab-iop" class="flex-1 py-3 text-sm font-bold bg-gray-700 text-white transition-colors focus:outline-none">IOP Correction</button>
-        <button onclick="switchTab('tab-info')" id="btn-tab-info" class="flex-1 py-3 text-sm font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 transition-colors focus:outline-none">IOP Formulas</button>
-        <button onclick="switchTab('tab-peds')" id="btn-tab-peds" class="flex-1 py-3 text-sm font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 transition-colors focus:outline-none">Pediatric Dose</button>
+    <nav class="bg-gray-100 mb-6 flex shadow-sm">
+        <button onclick="switchTab('tab-iop')" id="btn-tab-iop" class="flex-1 py-2.5 text-sm font-bold bg-gray-700 text-white transition-colors focus:outline-none">IOP Correction</button>
+        <button onclick="switchTab('tab-info')" id="btn-tab-info" class="flex-1 py-2.5 text-sm font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 transition-colors focus:outline-none">IOP Formulas</button>
+        <button onclick="switchTab('tab-peds')" id="btn-tab-peds" class="flex-1 py-2.5 text-sm font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 transition-colors focus:outline-none">Pediatric Dose</button>
     </nav>
 
     <main class="max-w-3xl mx-auto px-4 pb-12">
         
         <!-- 標籤 1: IOP Correction -->
         <div id="tab-iop" class="block">
-            
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 mb-6">
-                <!-- 第一區塊：輸入區 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4">
                 <div class="sync-grid mb-4">
-                    <!-- 標題列 -->
-                    <div></div> <!-- 左上角留空 -->
-                    <div class="bg-od rounded-lg p-2 md:p-3 text-center font-bold text-gray-800 flex items-center justify-center">OD</div>
-                    <div class="bg-os rounded-lg p-2 md:p-3 text-center font-bold text-gray-800 flex items-center justify-center">OS</div>
+                    <div></div>
+                    <div class="bg-od rounded-lg p-1.5 md:p-2 text-center font-bold text-gray-800 flex items-center justify-center">OD</div>
+                    <div class="bg-os rounded-lg p-1.5 md:p-2 text-center font-bold text-gray-800 flex items-center justify-center">OS</div>
 
-                    <!-- 輸入列：IOP -->
                     <div class="text-right text-xs md:text-sm font-medium text-gray-600">IOP (mmHg)</div>
-                    <div><input type="number" id="od_iop" step="any" inputmode="decimal" class="w-full text-center p-2 md:p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-od/20"></div>
-                    <div><input type="number" id="os_iop" step="any" inputmode="decimal" class="w-full text-center p-2 md:p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-os/20"></div>
+                    <div><input type="number" id="od_iop" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-od/20"></div>
+                    <div><input type="number" id="os_iop" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-os/20"></div>
 
-                    <!-- 輸入列：CCT -->
                     <div class="text-right text-xs md:text-sm font-medium text-gray-600">CCT (um)</div>
-                    <div><input type="number" id="od_cct" step="any" inputmode="decimal" class="w-full text-center p-2 md:p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-od/20"></div>
-                    <div><input type="number" id="os_cct" step="any" inputmode="decimal" class="w-full text-center p-2 md:p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-os/20"></div>
+                    <div><input type="number" id="od_cct" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-od/20"></div>
+                    <div><input type="number" id="os_cct" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-os/20"></div>
 
-                    <!-- 輸入列：K1 -->
-                    <div class="text-right text-xs md:text-sm font-medium text-gray-600 leading-tight">K1<br><span class="text-[10px] text-gray-400 font-normal">optional</span></div>
-                    <div><input type="number" id="od_k1" step="any" inputmode="decimal" class="w-full text-center p-2 md:p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-od/20"></div>
-                    <div><input type="number" id="os_k1" step="any" inputmode="decimal" class="w-full text-center p-2 md:p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-os/20"></div>
+                    <div class="text-right text-xs md:text-sm font-medium text-gray-600 leading-none">K1<br><span class="text-[10px] text-gray-400 font-normal">optional</span></div>
+                    <div><input type="number" id="od_k1" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-od/20"></div>
+                    <div><input type="number" id="os_k1" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-os/20"></div>
 
-                    <!-- 輸入列：K2 -->
-                    <div class="text-right text-xs md:text-sm font-medium text-gray-600 leading-tight">K2<br><span class="text-[10px] text-gray-400 font-normal">optional</span></div>
-                    <div><input type="number" id="od_k2" step="any" inputmode="decimal" class="w-full text-center p-2 md:p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-od/20"></div>
-                    <div><input type="number" id="os_k2" step="any" inputmode="decimal" class="w-full text-center p-2 md:p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-os/20"></div>
+                    <div class="text-right text-xs md:text-sm font-medium text-gray-600 leading-none">K2<br><span class="text-[10px] text-gray-400 font-normal">optional</span></div>
+                    <div><input type="number" id="od_k2" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-od/20"></div>
+                    <div><input type="number" id="os_k2" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-os/20"></div>
                 </div>
 
-                <!-- 計算按鈕：深灰底白字 -->
-                <div class="mt-8 border-b border-gray-200 pb-8">
-                    <button id="btn_calc" onclick="calculateIOP()" class="w-full bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 md:py-4 rounded-lg shadow-sm transition">
+                <div class="mt-4 border-b border-gray-200 pb-5">
+                    <button id="btn_calc" onclick="calculateIOP()" class="w-full bg-gray-700 hover:bg-gray-800 text-white font-bold py-2.5 rounded-lg shadow-sm transition">
                         Calculate
                     </button>
                 </div>
 
-                <!-- 第二區塊：輸出區 (使用與輸入區完全相同的 sync-grid 類別) -->
-                <div id="resultSection" class="mt-8 hidden">
-                    <div class="sync-grid" id="resultRows">
-                        <!-- 結果列將由 JS 動態生成在這裡 -->
-                    </div>
+                <div id="resultSection" class="mt-5 hidden">
+                    <div class="sync-grid" id="resultRows"></div>
                 </div>
-
             </div>
         </div>
 
-        <!-- 標籤 2: IOP Formulas (所有公式同等位階、公式在人名下方) -->
-        <div id="tab-info" class="hidden space-y-6">
+        <!-- 標籤 2: IOP Formulas -->
+        <div id="tab-info" class="hidden space-y-4">
             <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 text-gray-800">
                 
                 <!-- Shimmyo -->
                 <div class="mb-8">
-                    <h3 class="font-bold text-base md:text-lg border-b border-gray-300 pb-1 mb-2">Shimmyo et al. (2003)</h3>
-                    <p class="text-sm font-mono bg-gray-100 p-2 rounded inline-block mb-4">P = A + (550 - T) / X + 0.8 * (675 / (K1 + K2) - 7.85)</p>
+                    <h3 class="font-bold text-base border-b border-gray-300 pb-1 mb-2">Shimmyo et al. (2003)</h3>
+                    <div class="overflow-x-auto">
+                        $$P = A + \frac{550 - T}{X} + 0.8 \times \left[ \frac{675}{K1 + K2} - 7.85 \right]$$
+                    </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs md:text-sm mb-4">
-                        <!-- Linear Table -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mt-4">
                         <table class="w-full border-collapse border border-gray-300 text-center">
                             <thead>
-                                <tr class="bg-gray-200"><th class="border border-gray-300 p-2" colspan="2">Linear</th></tr>
+                                <tr class="bg-gray-200"><th class="border border-gray-300 p-1.5" colspan="2">Linear</th></tr>
                                 <tr class="bg-gray-100">
-                                    <th class="border border-gray-300 p-2">A Range (IOP)</th>
-                                    <th class="border border-gray-300 p-2">X Value</th>
+                                    <th class="border border-gray-300 p-1">A Range (IOP)</th>
+                                    <th class="border border-gray-300 p-1">X Value</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><td class="border border-gray-300 p-1">0 < A < 10</td><td class="border border-gray-300 p-1">X = -0.24A + 18.4</td></tr>
-                                <tr><td class="border border-gray-300 p-1">10 < A < 20</td><td class="border border-gray-300 p-1">X = -0.20A + 18</td></tr>
-                                <tr><td class="border border-gray-300 p-1">20 < A < 30</td><td class="border border-gray-300 p-1">X = -0.14A + 16.8</td></tr>
-                                <tr><td class="border border-gray-300 p-1">30 < A < 40</td><td class="border border-gray-300 p-1">X = -0.12A + 16.2</td></tr>
-                                <tr><td class="border border-gray-300 p-1">40 < A < 50</td><td class="border border-gray-300 p-1">X = -0.10A + 15.4</td></tr>
-                                <tr><td class="border border-gray-300 p-1">50 < A < 60+</td><td class="border border-gray-300 p-1">X = -0.08A + 14.4</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$0 < A < 10$</td><td class="border border-gray-300 p-1">$X = -0.24A + 18.4$</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$10 < A < 20$</td><td class="border border-gray-300 p-1">$X = -0.20A + 18$</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$20 < A < 30$</td><td class="border border-gray-300 p-1">$X = -0.14A + 16.8$</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$30 < A < 40$</td><td class="border border-gray-300 p-1">$X = -0.12A + 16.2$</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$40 < A < 50$</td><td class="border border-gray-300 p-1">$X = -0.10A + 15.4$</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$50 < A < 60+$</td><td class="border border-gray-300 p-1">$X = -0.08A + 14.4$</td></tr>
                             </tbody>
                         </table>
 
-                        <!-- Fixed Value Table -->
                         <table class="w-full border-collapse border border-gray-300 text-center">
                             <thead>
-                                <tr class="bg-gray-200"><th class="border border-gray-300 p-2" colspan="2">Fixed value</th></tr>
+                                <tr class="bg-gray-200"><th class="border border-gray-300 p-1.5" colspan="2">Fixed value</th></tr>
                                 <tr class="bg-gray-100">
-                                    <th class="border border-gray-300 p-2">A Range (IOP)</th>
-                                    <th class="border border-gray-300 p-2">X Value</th>
+                                    <th class="border border-gray-300 p-1">A Range (IOP)</th>
+                                    <th class="border border-gray-300 p-1">X Value</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr><td class="border border-gray-300 p-1">2.5 < A < 7.5</td><td class="border border-gray-300 p-1">X = 17</td></tr>
-                                <tr><td class="border border-gray-300 p-1">7.5 < A < 12.5</td><td class="border border-gray-300 p-1">X = 16</td></tr>
-                                <tr><td class="border border-gray-300 p-1">12.5 < A < 17.5</td><td class="border border-gray-300 p-1">X = 15</td></tr>
-                                <tr><td class="border border-gray-300 p-1">17.5 < A < 22.5</td><td class="border border-gray-300 p-1">X = 14</td></tr>
-                                <tr><td class="border border-gray-300 p-1">22.5 < A < 27.5</td><td class="border border-gray-300 p-1">X = 13.3</td></tr>
-                                <tr><td class="border border-gray-300 p-1">27.5 < A < 32.5</td><td class="border border-gray-300 p-1">X = 12.6</td></tr>
-                                <tr><td class="border border-gray-300 p-1">32.5 < A < 37.5</td><td class="border border-gray-300 p-1">X = 12.0</td></tr>
-                                <tr><td class="border border-gray-300 p-1">37.5 < A < 42.5</td><td class="border border-gray-300 p-1">X = 11.4</td></tr>
-                                <tr><td class="border border-gray-300 p-1">42.5 < A < 47.5</td><td class="border border-gray-300 p-1">X = 10.9</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$2.5 < A < 7.5$</td><td class="border border-gray-300 p-1">$X = 17$</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$7.5 < A < 12.5$</td><td class="border border-gray-300 p-1">$X = 16$</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$12.5 < A < 17.5$</td><td class="border border-gray-300 p-1">$X = 15$</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$17.5 < A < 22.5$</td><td class="border border-gray-300 p-1">$X = 14$</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$22.5 < A < 27.5$</td><td class="border border-gray-300 p-1">$X = 13.3$</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$27.5 < A < 32.5$</td><td class="border border-gray-300 p-1">$X = 12.6$</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$32.5 < A < 37.5$</td><td class="border border-gray-300 p-1">$X = 12.0$</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$37.5 < A < 42.5$</td><td class="border border-gray-300 p-1">$X = 11.4$</td></tr>
+                                <tr><td class="border border-gray-300 p-1">$42.5 < A < 47.5$</td><td class="border border-gray-300 p-1">$X = 10.9$</td></tr>
                             </tbody>
                         </table>
                     </div>
                     
-                    <!-- Exponential -->
-                    <div>
-                        <h4 class="font-bold text-sm mb-1">Exponential</h4>
-                        <p class="text-sm font-mono bg-gray-100 p-2 rounded inline-block">X = 18e<sup>-0.005A</sup></p>
+                    <div class="mt-4">
+                        <h4 class="font-bold text-sm mb-1 text-center bg-gray-200 py-1 border border-gray-300">Exponential</h4>
+                        <div class="text-center mt-2">
+                            $$X = 18e^{-0.005A}$$
+                        </div>
                     </div>
                 </div>
 
                 <!-- Doughty and Zaman -->
                 <div class="mb-6">
-                    <h3 class="font-bold text-base md:text-lg border-b border-gray-300 pb-1 mb-2">Doughty and Zaman (2000)</h3>
-                    <p class="text-sm font-mono bg-gray-100 p-2 rounded inline-block">GAT + 25 * ((545 - CCT) / 545)</p>
+                    <h3 class="font-bold text-base border-b border-gray-300 pb-1 mb-2">Doughty and Zaman (2000)</h3>
+                    <div class="overflow-x-auto">
+                        $$IOP_{actual} = GAT + 25 \times \left(\frac{545 - CCT}{545}\right)$$
+                    </div>
                 </div>
 
                 <!-- Shah et al -->
                 <div class="mb-6">
-                    <h3 class="font-bold text-base md:text-lg border-b border-gray-300 pb-1 mb-2">Shah et al. (1999)</h3>
-                    <p class="text-sm font-mono bg-gray-100 p-2 rounded inline-block">GAT - ((CCT - 520) / 10) * 0.71</p>
+                    <h3 class="font-bold text-base border-b border-gray-300 pb-1 mb-2">Shah et al. (1999)</h3>
+                    <div class="overflow-x-auto">
+                        $$IOP_{actual} = GAT - \left(\frac{CCT - 520}{10}\right) \times 0.71$$
+                    </div>
                 </div>
 
                 <!-- Whitacre et al -->
                 <div class="mb-6">
-                    <h3 class="font-bold text-base md:text-lg border-b border-gray-300 pb-1 mb-2">Whitacre et al. (1993)</h3>
-                    <div class="text-sm font-mono bg-gray-100 p-2 rounded inline-block">
-                        If CCT &ge; 520: GAT + 12.28 - (0.02283 * CCT)<br>
-                        If CCT < 520: GAT + 22.38 - (0.04644 * CCT)
+                    <h3 class="font-bold text-base border-b border-gray-300 pb-1 mb-2">Whitacre et al. (1993)</h3>
+                    <div class="overflow-x-auto text-sm">
+                        $$IOP_{actual} = GAT + 12.28 - (0.02283 \times CCT) \quad \text{if } CCT \ge 520$$
+                        $$IOP_{actual} = GAT + 22.38 - (0.04644 \times CCT) \quad \text{if } CCT < 520$$
                     </div>
                 </div>
 
                 <!-- Ehlers et al -->
                 <div class="mb-2">
-                    <h3 class="font-bold text-base md:text-lg border-b border-gray-300 pb-1 mb-2">Ehlers et al. (1975)</h3>
-                    <p class="text-sm font-mono bg-gray-100 p-2 rounded inline-block">GAT - ((CCT - 520) / 50) * 2.5</p>
+                    <h3 class="font-bold text-base border-b border-gray-300 pb-1 mb-2">Ehlers et al. (1975)</h3>
+                    <div class="overflow-x-auto">
+                        $$IOP_{actual} = GAT - \left(\frac{CCT - 520}{50}\right) \times 2.5$$
+                    </div>
                 </div>
 
             </div>
         </div>
 
-        <!-- 標籤 3: Pediatric Dose (佔位區) -->
+        <!-- 標籤 3: Pediatric Dose -->
         <div id="tab-peds" class="hidden">
             <div class="bg-white p-10 rounded-xl shadow-sm border border-gray-200 text-center text-gray-500">
                 <p class="mb-2">🚧</p>
@@ -188,19 +186,17 @@
     </main>
 
     <script>
-        /* 標籤頁切換邏輯 (深灰底白字樣式) */
         function switchTab(tabId) {
             ['tab-iop', 'tab-info', 'tab-peds'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
                 let btn = document.getElementById('btn-' + id);
-                btn.className = 'flex-1 py-3 text-sm font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 transition-colors focus:outline-none';
+                btn.className = 'flex-1 py-2.5 text-sm font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 transition-colors focus:outline-none';
             });
             document.getElementById(tabId).classList.remove('hidden');
             let activeBtn = document.getElementById('btn-' + tabId);
-            activeBtn.className = 'flex-1 py-3 text-sm font-bold bg-gray-700 text-white transition-colors focus:outline-none';
+            activeBtn.className = 'flex-1 py-2.5 text-sm font-bold bg-gray-700 text-white transition-colors focus:outline-none';
         }
 
-        /* Enter 鍵跳轉順序邏輯 */
         const jumpSequence = ['od_iop', 'od_cct', 'os_iop', 'os_cct', 'btn_calc'];
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
@@ -221,7 +217,6 @@
             }
         });
 
-        /* Shimmyo 公式 X 參數取得函數 */
         function getShimmyoX(A, type) {
             if (type === 'exp') return 18 * Math.exp(-0.005 * A);
             if (type === 'linear') {
@@ -246,7 +241,6 @@
             return 18 * Math.exp(-0.005 * A);
         }
 
-        /* 單眼運算邏輯 */
         function calculateSingleEye(gat, cct, k1, k2) {
             if (isNaN(gat) || isNaN(cct) || gat === "" || cct === "") return null;
 
@@ -266,49 +260,46 @@
                 : gat + 22.38 - (0.04644 * cct);
             let ehlers = gat - ((cct - 520) / 50) * 2.5;
 
-            // 確保順序：Linear -> Fixed -> Exponential -> 接著按年份
             return [
-                { name: "Shimmyo (03) Lin", val: shimLin },
-                { name: "Shimmyo (03) Fix", val: shimFix },
-                { name: "Shimmyo (03) Exp", val: shimExp },
-                { name: "Doughty (00)", val: doughty },
-                { name: "Shah (99)", val: shah },
-                { name: "Whitacre (93)", val: whitacre },
-                { name: "Ehlers (75)", val: ehlers }
+                { name: "Shimmyo (2003) Linear", val: shimLin },
+                { name: "Shimmyo (2003) Fixed", val: shimFix },
+                { name: "Shimmyo (2003) Exponential", val: shimExp },
+                { name: "Doughty (2000)", val: doughty },
+                { name: "Shah (1999)", val: shah },
+                { name: "Whitacre (1993)", val: whitacre },
+                { name: "Ehlers (1975)", val: ehlers }
             ];
         }
 
-        /* 渲染輸出結果 (動態生成於 sync-grid 內部) */
         function renderCombinedResults(od_res, os_res) {
             const container = document.getElementById('resultRows');
             container.innerHTML = '';
 
             if (!od_res && !os_res) {
-                container.innerHTML = `<div class="col-span-3 text-center text-gray-400 py-4">N/A</div>`;
+                document.getElementById('resultSection').classList.add('hidden');
                 return;
             }
 
             const templateNames = [
-                "Shimmyo (03) Lin", "Shimmyo (03) Fix", "Shimmyo (03) Exp",
-                "Doughty (00)", "Shah (99)", "Whitacre (93)", "Ehlers (75)"
+                "Shimmyo (2003) Linear", "Shimmyo (2003) Fixed", "Shimmyo (2003) Exponential",
+                "Doughty (2000)", "Shah (1999)", "Whitacre (1993)", "Ehlers (1975)"
             ];
 
             templateNames.forEach(name => {
                 let odItem = od_res ? od_res.find(r => r.name === name) : null;
                 let osItem = os_res ? os_res.find(r => r.name === name) : null;
 
-                let odStr = odItem ? odItem.val.toFixed(1) : '-';
-                let osStr = osItem ? osItem.val.toFixed(1) : '-';
+                let odStr = odItem ? odItem.val.toFixed(1) : '';
+                let osStr = osItem ? osItem.val.toFixed(1) : '';
 
                 container.innerHTML += `
                     <div class="text-right text-xs md:text-sm font-medium text-gray-600 leading-tight">${name}</div>
-                    <div class="bg-gray-100 border border-gray-200 text-center p-2 md:p-3 rounded-lg font-bold text-gray-800">${odStr}</div>
-                    <div class="bg-gray-100 border border-gray-200 text-center p-2 md:p-3 rounded-lg font-bold text-gray-800">${osStr}</div>
+                    <div class="bg-gray-100 border border-gray-200 text-center p-1.5 md:p-2 rounded-lg font-bold text-gray-800 min-h-[32px]">${odStr}</div>
+                    <div class="bg-gray-100 border border-gray-200 text-center p-1.5 md:p-2 rounded-lg font-bold text-gray-800 min-h-[32px]">${osStr}</div>
                 `;
             });
         }
 
-        /* 點擊計算按鈕執行 */
         function calculateIOP() {
             let od_gat = parseFloat(document.getElementById('od_iop').value);
             let od_cct = parseFloat(document.getElementById('od_cct').value);
