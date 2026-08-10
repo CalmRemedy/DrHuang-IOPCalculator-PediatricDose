@@ -42,13 +42,12 @@
         .katex { font-size: 1.05em !important; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans min-h-screen pt-4 md:pt-6">
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen pt-20 md:pt-10">
 
-    <!-- 頂部導覽列：動態調整字體大小，被選取時放大 -->
+    <!-- 頂部導覽列：移除小兒劑量，變成兩等分 -->
     <nav class="bg-gray-200/90 p-2 mb-3 flex gap-1.5 shadow-inner max-w-3xl mx-auto mx-2">
         <button onclick="switchTab('tab-iop')" id="btn-tab-iop" class="flex-1 py-2.5 text-base md:text-lg font-bold bg-gray-700 text-white shadow-md rounded-lg transition-all focus:outline-none">IOP Correction</button>
-        <button onclick="switchTab('tab-info')" id="btn-tab-info" class="flex-1 py-2.5 text-sm md:text-base font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none">IOP Formulas</button>
-        <button onclick="switchTab('tab-peds')" id="btn-tab-peds" class="flex-1 py-2.5 text-sm md:text-base font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none">Pediatric Dose</button>
+        <button onclick="switchTab('tab-info')" id="btn-tab-info" class="flex-1 py-2.5 text-base md:text-lg font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none">IOP Formulas</button>
     </nav>
 
     <main class="max-w-3xl mx-auto px-2 pb-6">
@@ -57,6 +56,7 @@
         <div id="tab-iop" class="block">
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-3">
                 <div id="inputHeaderGrid" class="sync-grid pb-1">
+                    <!-- 左上角 CLEAR 按鈕 -->
                     <div class="flex items-center justify-center">
                         <button onclick="clearAll()" class="text-xs md:text-sm font-bold text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md px-3 py-1.5 transition-all shadow-sm">
                             CLEAR
@@ -73,11 +73,17 @@
                     <div><input type="number" id="od_cct" tabindex="3" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
                     <div><input type="number" id="os_cct" tabindex="4" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
 
-                    <div class="text-right text-sm md:text-base font-bold text-gray-700 leading-none">K1<br><span class="text-[10px] md:text-xs text-gray-400 font-normal">optional</span></div>
+                    <div class="flex flex-col justify-center items-end leading-none">
+                        <span class="text-sm md:text-base font-bold text-gray-700">K1</span>
+                        <span class="text-[10px] md:text-[11px] text-gray-500 font-normal mt-[3px]">optional</span>
+                    </div>
                     <div><input type="number" id="od_k1" tabindex="5" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
                     <div><input type="number" id="os_k1" tabindex="7" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
 
-                    <div class="text-right text-sm md:text-base font-bold text-gray-700 leading-none">K2<br><span class="text-[10px] md:text-xs text-gray-400 font-normal">optional</span></div>
+                    <div class="flex flex-col justify-center items-end leading-none">
+                        <span class="text-sm md:text-base font-bold text-gray-700">K2</span>
+                        <span class="text-[10px] md:text-[11px] text-gray-500 font-normal mt-[3px]">optional</span>
+                    </div>
                     <div><input type="number" id="od_k2" tabindex="6" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
                     <div><input type="number" id="os_k2" tabindex="8" step="any" inputmode="decimal" oninput="autoCalculate()" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
                 </div>
@@ -178,15 +184,6 @@
             </div>
         </div>
 
-        <!-- 標籤 3: Pediatric Dose -->
-        <div id="tab-peds" class="hidden">
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center text-gray-500">
-                <p class="mb-2">🚧</p>
-                <p>Pediatric Dose Module is under construction...</p>
-                <p class="text-xs mt-2">小兒劑量計算模組預留擴充區塊</p>
-            </div>
-        </div>
-
     </main>
 
     <script>
@@ -218,9 +215,9 @@
             }
         }
 
-        /* 更新：未選取時為較小字體，被選取時放大 */
+        /* Tab 切換邏輯 */
         function switchTab(tabId) {
-            ['tab-iop', 'tab-info', 'tab-peds'].forEach(id => {
+            ['tab-iop', 'tab-info'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
                 let btn = document.getElementById('btn-' + id);
                 btn.className = 'flex-1 py-2.5 text-sm md:text-base font-bold text-gray-600 hover:text-gray-900 transition-all focus:outline-none';
@@ -276,7 +273,8 @@
 
         function calculateSingleEye(gat, cct, k1, k2) {
             let k_term = 0;
-            if (!isNaN(k1) && !isNaN(k2) && k1 > 0 && k2 > 0) {
+            // K值設定大於20再進行計算，避免只輸入第一碼時造成視覺干擾
+            if (!isNaN(k1) && !isNaN(k2) && k1 > 20 && k2 > 20) {
                 k_term = 0.8 * ((675 / (k1 + k2)) - 7.85);
             }
             
