@@ -35,7 +35,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans min-h-screen">
 
-    <!-- 頂部標籤導覽列 -->
+    <!-- 頂部標籤導覽列 (bg-gray-700) -->
     <nav class="bg-gray-100 mb-3 flex shadow-sm">
         <button onclick="switchTab('tab-iop')" id="btn-tab-iop" class="flex-1 py-3 text-base md:text-lg font-bold bg-gray-700 text-white transition-colors focus:outline-none">IOP Correction</button>
         <button onclick="switchTab('tab-info')" id="btn-tab-info" class="flex-1 py-3 text-base md:text-lg font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 transition-colors focus:outline-none">IOP Formulas</button>
@@ -53,28 +53,33 @@
                     <div class="bg-[#e2d5d6] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center">OS</div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700">IOP (mmHg)</div>
-                    <!-- 眼壓數值改回深灰色，並將字體放大為 text-lg md:text-xl -->
-                    <div><input type="number" id="od_iop" tabindex="1" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 text-lg md:text-xl p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
-                    <div><input type="number" id="os_iop" tabindex="3" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 text-lg md:text-xl p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <!-- 加入 h-[36px] md:h-[42px] 鎖定輸入框高度，並將字體加大到 text-2xl md:text-3xl -->
+                    <!-- tabindex 修改為 OD=1, OS=2 -->
+                    <div><input type="number" id="od_iop" tabindex="1" step="any" inputmode="decimal" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 text-2xl md:text-3xl rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_iop" tabindex="2" step="any" inputmode="decimal" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 text-2xl md:text-3xl rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700">CCT (μm)</div>
-                    <div><input type="number" id="od_cct" tabindex="2" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
-                    <div><input type="number" id="os_cct" tabindex="4" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <!-- tabindex 修改為 OD=3, OS=4 -->
+                    <div><input type="number" id="od_cct" tabindex="3" step="any" inputmode="decimal" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_cct" tabindex="4" step="any" inputmode="decimal" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700 leading-none">K1<br><span class="text-[10px] md:text-xs text-gray-400 font-normal">optional</span></div>
-                    <div><input type="number" id="od_k1" tabindex="5" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
-                    <div><input type="number" id="os_k1" tabindex="7" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <!-- tabindex 修改為 OD=5, 這裡跳過跨眼，改為本眼K1->K2 所以 OD K1=5, OD K2=6 -->
+                    <!-- 根據您的指示："OD K1, OD K2, OS K1, OS K2" -->
+                    <div><input type="number" id="od_k1" tabindex="5" step="any" inputmode="decimal" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_k1" tabindex="7" step="any" inputmode="decimal" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700 leading-none">K2<br><span class="text-[10px] md:text-xs text-gray-400 font-normal">optional</span></div>
-                    <div><input type="number" id="od_k2" tabindex="6" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
-                    <div><input type="number" id="os_k2" tabindex="8" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <!-- tabindex 修改為 OD K2=6, OS K2=8 -->
+                    <div><input type="number" id="od_k2" tabindex="6" step="any" inputmode="decimal" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_k2" tabindex="8" step="any" inputmode="decimal" class="w-full h-[36px] md:h-[42px] text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
                 </div>
 
-                <!-- Calculate 按鈕：顏色改淺為 bg-gray-400，並移除底部的分隔橫線 -->
+                <!-- Calculate 按鈕改為深灰 bg-gray-700 -->
                 <div class="sync-grid">
                     <div></div>
                     <div class="col-span-2">
-                        <button id="btn_calc" tabindex="9" onclick="calculateIOP()" class="w-full bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 md:py-2.5 rounded shadow-sm transition">
+                        <button id="btn_calc" tabindex="9" onclick="calculateIOP()" class="w-full bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 md:py-2.5 rounded shadow-sm transition">
                             Calculate
                         </button>
                     </div>
@@ -92,8 +97,8 @@
                 
                 <!-- Shimmyo -->
                 <div class="mb-2">
-                    <!-- 人名標籤：顏色同步改淺為 bg-gray-400 -->
-                    <div class="bg-gray-400 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Shimmyo et al. (2003)</div>
+                    <!-- 人名標籤改為深灰 bg-gray-700 -->
+                    <div class="bg-gray-700 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Shimmyo et al. (2003)</div>
                     <div class="overflow-x-auto px-1">
                         $$P = A + \frac{550 - T}{X} + 0.8 \times \left[ \frac{675}{K1 + K2} - 7.85 \right]$$
                     </div>
@@ -149,7 +154,7 @@
 
                 <!-- Doughty and Zaman -->
                 <div class="mb-1 pt-1">
-                    <div class="bg-gray-400 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Doughty and Zaman (2000)</div>
+                    <div class="bg-gray-700 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Doughty and Zaman (2000)</div>
                     <div class="overflow-x-auto px-1">
                         $$IOP_{actual} = GAT + 25 \times \left(\frac{545 - CCT}{545}\right)$$
                     </div>
@@ -157,7 +162,7 @@
 
                 <!-- Shah et al -->
                 <div class="mb-1 pt-1">
-                    <div class="bg-gray-400 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Shah et al. (1999)</div>
+                    <div class="bg-gray-700 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Shah et al. (1999)</div>
                     <div class="overflow-x-auto px-1">
                         $$IOP_{actual} = GAT - \left(\frac{CCT - 520}{10}\right) \times 0.71$$
                     </div>
@@ -165,7 +170,7 @@
 
                 <!-- Whitacre et al -->
                 <div class="mb-1 pt-1">
-                    <div class="bg-gray-400 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Whitacre et al. (1993)</div>
+                    <div class="bg-gray-700 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Whitacre et al. (1993)</div>
                     <div class="overflow-x-auto px-1 mt-1">
                         <div class="text-[13px] md:text-sm text-gray-700 mb-0.5">If $CCT \ge 520$:</div>
                         <div>$$IOP_{actual} = GAT + 12.28 - (0.02283 \times CCT)$$</div>
@@ -176,7 +181,7 @@
 
                 <!-- Ehlers et al -->
                 <div class="mb-1 pt-1">
-                    <div class="bg-gray-400 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Ehlers et al. (1975)</div>
+                    <div class="bg-gray-700 text-white font-bold text-sm px-2 py-1 rounded block mb-1">Ehlers et al. (1975)</div>
                     <div class="overflow-x-auto px-1">
                         $$IOP_{actual} = GAT - \left(\frac{CCT - 520}{50}\right) \times 2.5$$
                     </div>
@@ -208,7 +213,8 @@
             activeBtn.className = 'flex-1 py-3 text-base md:text-lg font-bold bg-gray-700 text-white transition-colors focus:outline-none';
         }
 
-        const jumpSequence = ['od_iop', 'od_cct', 'os_iop', 'os_cct', 'btn_calc'];
+        // 修改 JS 中的跳轉順序，與 Tabindex 完全一致
+        const jumpSequence = ['od_iop', 'os_iop', 'od_cct', 'os_cct', 'od_k1', 'od_k2', 'os_k1', 'os_k2', 'btn_calc'];
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 const activeId = document.activeElement.id;
