@@ -49,31 +49,32 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-3">
                 <div class="sync-grid mb-3">
                     <div></div>
-                    <!-- OD / OS 標題改為深藍與深粉紅，增加辨識度 -->
-                    <div class="bg-[#cbd5e1] rounded p-1.5 text-center font-bold text-blue-800 flex items-center justify-center">OD</div>
-                    <div class="bg-[#e2d5d6] rounded p-1.5 text-center font-bold text-rose-800 flex items-center justify-center">OS</div>
+                    <!-- 標題改回深灰色 text-gray-800 -->
+                    <div class="bg-[#cbd5e1] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center">OD</div>
+                    <div class="bg-[#e2d5d6] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center">OS</div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700">IOP (mmHg)</div>
-                    <!-- OD 輸入框字體：text-blue-800，OS 輸入框字體：text-rose-800 -->
-                    <div><input type="number" id="od_iop" tabindex="1" step="any" inputmode="decimal" class="w-full text-center font-bold text-blue-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
-                    <div><input type="number" id="os_iop" tabindex="3" step="any" inputmode="decimal" class="w-full text-center font-bold text-rose-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <!-- 眼壓數值改為較不鮮豔的深灰藍 (#3b4a5a) 與深灰粉紅 (#7a5259) -->
+                    <div><input type="number" id="od_iop" tabindex="1" step="any" inputmode="decimal" class="w-full text-center font-bold text-[#3b4a5a] p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_iop" tabindex="3" step="any" inputmode="decimal" class="w-full text-center font-bold text-[#7a5259] p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700">CCT (μm)</div>
-                    <div><input type="number" id="od_cct" tabindex="2" step="any" inputmode="decimal" class="w-full text-center font-bold text-blue-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
-                    <div><input type="number" id="os_cct" tabindex="4" step="any" inputmode="decimal" class="w-full text-center font-bold text-rose-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <!-- 其餘數值改回 text-gray-800 -->
+                    <div><input type="number" id="od_cct" tabindex="2" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_cct" tabindex="4" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700 leading-none">K1<br><span class="text-[10px] md:text-xs text-gray-400 font-normal">optional</span></div>
-                    <div><input type="number" id="od_k1" tabindex="5" step="any" inputmode="decimal" class="w-full text-center font-bold text-blue-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
-                    <div><input type="number" id="os_k1" tabindex="7" step="any" inputmode="decimal" class="w-full text-center font-bold text-rose-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="od_k1" tabindex="5" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_k1" tabindex="7" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
 
                     <div class="text-right text-sm md:text-base font-bold text-gray-700 leading-none">K2<br><span class="text-[10px] md:text-xs text-gray-400 font-normal">optional</span></div>
-                    <div><input type="number" id="od_k2" tabindex="6" step="any" inputmode="decimal" class="w-full text-center font-bold text-blue-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
-                    <div><input type="number" id="os_k2" tabindex="8" step="any" inputmode="decimal" class="w-full text-center font-bold text-rose-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="od_k2" tabindex="6" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
+                    <div><input type="number" id="os_k2" tabindex="8" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-white"></div>
                 </div>
 
-                <!-- Calculate 按鈕區塊：改用 sync-grid 使其與上方欄寬對齊 -->
+                <!-- Calculate 按鈕 -->
                 <div class="sync-grid border-b border-gray-200 pb-3">
-                    <div></div> <!-- 預留左方標籤區的空格 -->
+                    <div></div>
                     <div class="col-span-2">
                         <button id="btn_calc" tabindex="9" onclick="calculateIOP()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 md:py-2.5 rounded shadow-sm transition">
                             Calculate
@@ -315,11 +316,11 @@
                     </div>
                 `;
 
-                // 結果也套用 text-blue-800 與 text-rose-800 以保持顏色一致
+                // 計算結果改回深灰色 text-gray-800
                 container.innerHTML += `
                     <div class="text-right">${labelHtml}</div>
-                    <div class="bg-gray-100 border border-gray-200 text-center p-1.5 rounded font-bold text-blue-800 min-h-[32px] flex items-center justify-center">${odStr}</div>
-                    <div class="bg-gray-100 border border-gray-200 text-center p-1.5 rounded font-bold text-rose-800 min-h-[32px] flex items-center justify-center">${osStr}</div>
+                    <div class="bg-gray-100 border border-gray-200 text-center p-1.5 rounded font-bold text-gray-800 min-h-[32px] flex items-center justify-center">${odStr}</div>
+                    <div class="bg-gray-100 border border-gray-200 text-center p-1.5 rounded font-bold text-gray-800 min-h-[32px] flex items-center justify-center">${osStr}</div>
                 `;
             });
         }
