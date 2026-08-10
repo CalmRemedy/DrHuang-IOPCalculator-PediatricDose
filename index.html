@@ -12,14 +12,12 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
 
     <style>
-        .bg-od { background-color: #cbd5e1; }
-        .bg-os { background-color: #e2d5d6; }
-        
+        /* 隱藏 Chrome/Safari 數字輸入框預設的上下箭頭 */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* 縮小間距，讓排版更緊密 */
+        /* 統一三欄式排版寬度 */
         .sync-grid {
             display: grid;
             grid-template-columns: 110px 1fr 1fr;
@@ -29,10 +27,15 @@
         @media (min-width: 768px) {
             .sync-grid { grid-template-columns: 140px 1fr 1fr; }
         }
+
+        /* 覆寫 KaTeX 的預設間距，讓行距更緊密，並稍微縮小公式避免跑版 */
+        .katex-display { margin: 0.25em 0 !important; }
+        .katex-shrink .katex { font-size: 0.9em !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans min-h-screen">
 
+    <!-- 頂部標籤導覽列 -->
     <nav class="bg-gray-100 mb-6 flex shadow-sm">
         <button onclick="switchTab('tab-iop')" id="btn-tab-iop" class="flex-1 py-2.5 text-sm font-bold bg-gray-700 text-white transition-colors focus:outline-none">IOP Correction</button>
         <button onclick="switchTab('tab-info')" id="btn-tab-info" class="flex-1 py-2.5 text-sm font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 transition-colors focus:outline-none">IOP Formulas</button>
@@ -46,24 +49,26 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4">
                 <div class="sync-grid mb-4">
                     <div></div>
-                    <div class="bg-od rounded-lg p-1.5 md:p-2 text-center font-bold text-gray-800 flex items-center justify-center">OD</div>
-                    <div class="bg-os rounded-lg p-1.5 md:p-2 text-center font-bold text-gray-800 flex items-center justify-center">OS</div>
+                    <!-- OD / OS 標題底色使用 Tailwind 的任意值標籤 -->
+                    <div class="bg-[#cbd5e1] rounded-lg p-1.5 md:p-2 text-center font-bold text-gray-800 flex items-center justify-center">OD</div>
+                    <div class="bg-[#e2d5d6] rounded-lg p-1.5 md:p-2 text-center font-bold text-gray-800 flex items-center justify-center">OS</div>
 
                     <div class="text-right text-xs md:text-sm font-medium text-gray-600">IOP (mmHg)</div>
-                    <div><input type="number" id="od_iop" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-od/20"></div>
-                    <div><input type="number" id="os_iop" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-os/20"></div>
+                    <!-- 加入動態變色邏輯：當有輸入值時，替換掉透明度 /30 -->
+                    <div><input type="number" id="od_iop" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-[#cbd5e1]/30 transition-colors" oninput="toggleBg(this, 'bg-[#cbd5e1]', 'bg-[#cbd5e1]/30')"></div>
+                    <div><input type="number" id="os_iop" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-[#e2d5d6]/30 transition-colors" oninput="toggleBg(this, 'bg-[#e2d5d6]', 'bg-[#e2d5d6]/30')"></div>
 
                     <div class="text-right text-xs md:text-sm font-medium text-gray-600">CCT (um)</div>
-                    <div><input type="number" id="od_cct" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-od/20"></div>
-                    <div><input type="number" id="os_cct" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-os/20"></div>
+                    <div><input type="number" id="od_cct" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-[#cbd5e1]/30"></div>
+                    <div><input type="number" id="os_cct" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-[#e2d5d6]/30"></div>
 
                     <div class="text-right text-xs md:text-sm font-medium text-gray-600 leading-none">K1<br><span class="text-[10px] text-gray-400 font-normal">optional</span></div>
-                    <div><input type="number" id="od_k1" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-od/20"></div>
-                    <div><input type="number" id="os_k1" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-os/20"></div>
+                    <div><input type="number" id="od_k1" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-[#cbd5e1]/30"></div>
+                    <div><input type="number" id="os_k1" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-[#e2d5d6]/30"></div>
 
                     <div class="text-right text-xs md:text-sm font-medium text-gray-600 leading-none">K2<br><span class="text-[10px] text-gray-400 font-normal">optional</span></div>
-                    <div><input type="number" id="od_k2" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-od/20"></div>
-                    <div><input type="number" id="os_k2" step="any" inputmode="decimal" class="w-full text-center p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-os/20"></div>
+                    <div><input type="number" id="od_k2" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-[#cbd5e1]/30"></div>
+                    <div><input type="number" id="os_k2" step="any" inputmode="decimal" class="w-full text-center font-bold text-gray-800 p-1.5 md:p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:outline-none bg-[#e2d5d6]/30"></div>
                 </div>
 
                 <div class="mt-4 border-b border-gray-200 pb-5">
@@ -79,20 +84,20 @@
         </div>
 
         <!-- 標籤 2: IOP Formulas -->
-        <div id="tab-info" class="hidden space-y-4">
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 text-gray-800">
+        <div id="tab-info" class="hidden space-y-2">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 text-gray-800 katex-shrink">
                 
                 <!-- Shimmyo -->
-                <div class="mb-8">
-                    <h3 class="font-bold text-base border-b border-gray-300 pb-1 mb-2">Shimmyo et al. (2003)</h3>
-                    <div class="overflow-x-auto">
+                <div class="mb-4">
+                    <div class="bg-gray-700 text-white font-bold text-sm px-3 py-1 rounded inline-block mb-1">Shimmyo et al. (2003)</div>
+                    <div class="overflow-x-auto px-2">
                         $$P = A + \frac{550 - T}{X} + 0.8 \times \left[ \frac{675}{K1 + K2} - 7.85 \right]$$
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mt-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] md:text-xs mt-2">
                         <table class="w-full border-collapse border border-gray-300 text-center">
                             <thead>
-                                <tr class="bg-gray-200"><th class="border border-gray-300 p-1.5" colspan="2">Linear</th></tr>
+                                <tr class="bg-gray-200"><th class="border border-gray-300 p-1" colspan="2">Linear</th></tr>
                                 <tr class="bg-gray-100">
                                     <th class="border border-gray-300 p-1">A Range (IOP)</th>
                                     <th class="border border-gray-300 p-1">X Value</th>
@@ -110,7 +115,7 @@
 
                         <table class="w-full border-collapse border border-gray-300 text-center">
                             <thead>
-                                <tr class="bg-gray-200"><th class="border border-gray-300 p-1.5" colspan="2">Fixed value</th></tr>
+                                <tr class="bg-gray-200"><th class="border border-gray-300 p-1" colspan="2">Fixed value</th></tr>
                                 <tr class="bg-gray-100">
                                     <th class="border border-gray-300 p-1">A Range (IOP)</th>
                                     <th class="border border-gray-300 p-1">X Value</th>
@@ -130,43 +135,45 @@
                         </table>
                     </div>
                     
-                    <div class="mt-4">
-                        <h4 class="font-bold text-sm mb-1 text-center bg-gray-200 py-1 border border-gray-300">Exponential</h4>
-                        <div class="text-center mt-2">
+                    <div class="mt-3">
+                        <div class="font-bold text-[11px] md:text-xs text-center bg-gray-200 py-1 border border-gray-300">Exponential</div>
+                        <div class="text-center mt-1">
                             $$X = 18e^{-0.005A}$$
                         </div>
                     </div>
                 </div>
 
                 <!-- Doughty and Zaman -->
-                <div class="mb-6">
-                    <h3 class="font-bold text-base border-b border-gray-300 pb-1 mb-2">Doughty and Zaman (2000)</h3>
-                    <div class="overflow-x-auto">
+                <div class="mb-4 border-t border-gray-200 pt-4">
+                    <div class="bg-gray-700 text-white font-bold text-sm px-3 py-1 rounded inline-block mb-1">Doughty and Zaman (2000)</div>
+                    <div class="overflow-x-auto px-2">
                         $$IOP_{actual} = GAT + 25 \times \left(\frac{545 - CCT}{545}\right)$$
                     </div>
                 </div>
 
                 <!-- Shah et al -->
-                <div class="mb-6">
-                    <h3 class="font-bold text-base border-b border-gray-300 pb-1 mb-2">Shah et al. (1999)</h3>
-                    <div class="overflow-x-auto">
+                <div class="mb-4 border-t border-gray-200 pt-4">
+                    <div class="bg-gray-700 text-white font-bold text-sm px-3 py-1 rounded inline-block mb-1">Shah et al. (1999)</div>
+                    <div class="overflow-x-auto px-2">
                         $$IOP_{actual} = GAT - \left(\frac{CCT - 520}{10}\right) \times 0.71$$
                     </div>
                 </div>
 
-                <!-- Whitacre et al -->
-                <div class="mb-6">
-                    <h3 class="font-bold text-base border-b border-gray-300 pb-1 mb-2">Whitacre et al. (1993)</h3>
-                    <div class="overflow-x-auto text-sm">
-                        $$IOP_{actual} = GAT + 12.28 - (0.02283 \times CCT) \quad \text{if } CCT \ge 520$$
-                        $$IOP_{actual} = GAT + 22.38 - (0.04644 \times CCT) \quad \text{if } CCT < 520$$
+                <!-- Whitacre et al (分四行佈局) -->
+                <div class="mb-4 border-t border-gray-200 pt-4">
+                    <div class="bg-gray-700 text-white font-bold text-sm px-3 py-1 rounded inline-block mb-1">Whitacre et al. (1993)</div>
+                    <div class="overflow-x-auto px-3 text-sm text-gray-700 mt-1">
+                        <div>If $CCT \ge 520$:</div>
+                        <div>$$IOP_{actual} = GAT + 12.28 - (0.02283 \times CCT)$$</div>
+                        <div class="mt-2">If $CCT < 520$:</div>
+                        <div>$$IOP_{actual} = GAT + 22.38 - (0.04644 \times CCT)$$</div>
                     </div>
                 </div>
 
                 <!-- Ehlers et al -->
-                <div class="mb-2">
-                    <h3 class="font-bold text-base border-b border-gray-300 pb-1 mb-2">Ehlers et al. (1975)</h3>
-                    <div class="overflow-x-auto">
+                <div class="mb-2 border-t border-gray-200 pt-4">
+                    <div class="bg-gray-700 text-white font-bold text-sm px-3 py-1 rounded inline-block mb-1">Ehlers et al. (1975)</div>
+                    <div class="overflow-x-auto px-2">
                         $$IOP_{actual} = GAT - \left(\frac{CCT - 520}{50}\right) \times 2.5$$
                     </div>
                 </div>
@@ -186,6 +193,17 @@
     </main>
 
     <script>
+        /* 眼壓欄位動態變色邏輯 */
+        function toggleBg(inputElement, activeClass, inactiveClass) {
+            if (inputElement.value !== "") {
+                inputElement.classList.add(activeClass.replace('bg-[', '').replace(']', '')); // Tailwind arbitrary fix bypass fallback if needed
+                // 為了確保 CDN 運作，我們直接替換 className 字串
+                inputElement.className = inputElement.className.replace(inactiveClass, activeClass);
+            } else {
+                inputElement.className = inputElement.className.replace(activeClass, inactiveClass);
+            }
+        }
+
         function switchTab(tabId) {
             ['tab-iop', 'tab-info', 'tab-peds'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
@@ -262,7 +280,7 @@
 
             return [
                 { name: "Shimmyo (2003) Linear", val: shimLin },
-                { name: "Shimmyo (2003) Fixed", val: shimFix },
+                { name: "Shimmyo (2003) Fixed value", val: shimFix },
                 { name: "Shimmyo (2003) Exponential", val: shimExp },
                 { name: "Doughty (2000)", val: doughty },
                 { name: "Shah (1999)", val: shah },
@@ -281,7 +299,7 @@
             }
 
             const templateNames = [
-                "Shimmyo (2003) Linear", "Shimmyo (2003) Fixed", "Shimmyo (2003) Exponential",
+                "Shimmyo (2003) Linear", "Shimmyo (2003) Fixed value", "Shimmyo (2003) Exponential",
                 "Doughty (2000)", "Shah (1999)", "Whitacre (1993)", "Ehlers (1975)"
             ];
 
