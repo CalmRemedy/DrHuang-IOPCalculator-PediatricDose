@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ophthalmology Tools</title>
+    <title>OphCalc</title>
+
+    <!-- 設定加到手機主畫面時的 App 屬性 -->
+    <meta name="apple-mobile-web-app-title" content="OphCalc">
+    <meta name="application-name" content="OphCalc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- 引入 KaTeX -->
@@ -48,7 +57,12 @@
         <div id="tab-iop" class="block">
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-3">
                 <div class="sync-grid border-b border-gray-200 pb-4">
-                    <div></div>
+                    <!-- 左上角加入 Clear 歸零按鈕 -->
+                    <div class="flex items-center justify-center">
+                        <button onclick="clearAll()" class="text-[11px] md:text-xs font-bold text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded px-2 py-1 transition-colors">
+                            Clear
+                        </button>
+                    </div>
                     <div class="bg-[#cbd5e1] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center text-2xl md:text-3xl h-[36px] md:h-[42px]">OD</div>
                     <div class="bg-[#e2d5d6] rounded p-1.5 text-center font-bold text-gray-800 flex items-center justify-center text-2xl md:text-3xl h-[36px] md:h-[42px]">OS</div>
 
@@ -177,6 +191,27 @@
     </main>
 
     <script>
+        /* 歸零所有輸入格 */
+        function clearAll() {
+            const inputs = ['od_iop', 'os_iop', 'od_cct', 'os_cct', 'od_k1', 'os_k1', 'od_k2', 'os_k2'];
+            inputs.forEach(id => {
+                let el = document.getElementById(id);
+                el.value = '';
+                
+                // 針對 IOP 欄位移除背景色，恢復預設的 bg-white
+                if(id === 'od_iop' || id === 'os_iop') {
+                    el.classList.remove('bg-[#cbd5e1]', 'bg-[#e2d5d6]');
+                    el.classList.add('bg-white');
+                }
+            });
+            
+            // 重新觸發計算，讓下方結果區自動隱藏
+            autoCalculate();
+            
+            // 將游標自動移回第一格 (OD IOP)
+            document.getElementById('od_iop').focus();
+        }
+
         /* 動態切換眼壓輸入格的底色 */
         function toggleBg(input, activeClass) {
             if (input.value !== "") {
@@ -296,11 +331,9 @@
                     </div>
                 `;
 
-                // 判斷是否為 Shimmyo 公式，若是則深灰 (text-gray-800)，若否則改為更淡的淺灰 (text-gray-400)
                 let isShimmyo = t.id.startsWith('shim');
                 let valColor = isShimmyo ? 'text-gray-800' : 'text-gray-400';
 
-                // 根據是否有數值，決定是否顯示底色與邊框
                 let odClass = odStr !== '' ? 'bg-[#cbd5e1]/25 border-[#cbd5e1]' : 'bg-transparent border-transparent';
                 let osClass = osStr !== '' ? 'bg-[#e2d5d6]/40 border-[#e2d5d6]' : 'bg-transparent border-transparent';
 
@@ -324,19 +357,16 @@
             let os_k1 = parseFloat(document.getElementById('os_k1').value);
             let os_k2 = parseFloat(document.getElementById('os_k2').value);
 
-            // 只有當 IOP 為有效數字，且 CCT 大於 200 時，才顯示計算結果，避免閃爍
             let od_valid = !isNaN(od_gat) && !isNaN(od_cct) && od_cct > 200;
             let os_valid = !isNaN(os_gat) && !isNaN(os_cct) && os_cct > 200;
 
             let section = document.getElementById('resultSection');
 
-            // 如果兩眼都沒符合條件，隱藏結果區
             if (!od_valid && !os_valid) {
                 section.classList.add('hidden');
                 return;
             }
 
-            // 若有資料，展開並計算
             section.classList.remove('hidden');
             
             let od_res = od_valid ? calculateSingleEye(od_gat, od_cct, od_k1, od_k2) : null;
